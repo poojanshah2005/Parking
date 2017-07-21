@@ -37,10 +37,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     static final Integer CAMERA = 0x5;
     static final Integer ACCOUNTS = 0x6;
     static final Integer GPS_SETTINGS = 0x7;
-
-    private GoogleMap mMap;
-
     Interactor_Impl2 interactor_2;
+    private GoogleMap mMap;
 
     public MapsActivity() {
     }
@@ -53,9 +51,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         interactor_2 = new Interactor_Impl2();
-            }
+    }
 
 
     /**
@@ -70,6 +67,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMarkerClickListener(this);
 //        for(LatLng l:latLngs){
 ////            Log.i("onMapReady", l.longitude + " " + l.latitude);
 //            LatLng sydney = new LatLng(l.latitude,l.longitude);
@@ -110,8 +108,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             }
 
 
-            Log.i("Parking57",parking.getName() + " " + parking.getIsReserved());
             LatLng latLng = new LatLng(parking.getLat(),parking.getLng());
+//            Log.i("Parking57",parking.getName() + " " + parking.getIsReserved());
+            Log.i("Parking57",latLng.toString());
             MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(bitmapDescriptor).title(parking.getName());
             mMap.addMarker(markerOptions);
         }

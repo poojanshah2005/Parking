@@ -1,6 +1,6 @@
 package com.poojanshah.json_fist_application.Injection;
 
-import com.poojanshah.json_fist_application.MainActivity;
+import com.poojanshah.json_fist_application.MapsActivity;
 
 import dagger.Component;
 
@@ -10,7 +10,7 @@ import dagger.Component;
 @PerActivity
 @Component(dependencies = {PresenterModule.class})
 public interface IPresenterComponent {
-    void inject(MainActivity mainActivity);
+    void inject(MapsActivity mapsActivity);
    // void inject(CakeListPresenterImpl cakeListPresenter);
 //    void inject(Interactor_Impl interactor_);
 }
