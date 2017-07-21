@@ -1,36 +1,17 @@
 package com.poojanshah.json_fist_application;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.poojanshah.json_fist_application.Injection.components.APIComponent;
-import com.poojanshah.json_fist_application.MVP.interactor.Interactor;
-import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl;
 import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
-import com.poojanshah.json_fist_application.model.JustEat;
-import com.poojanshah.json_fist_application.model.Restaurant;
-
-import java.util.ArrayList;
-
-import javax.inject.Inject;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -50,8 +31,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //    ArrayList<LatLng> latLngs;
 
     Interactor_Impl2 interactor_2;
-
-    JustEat justEat;
+//
+//    JustEat justEat;
 
 
     public MapsActivity() {
@@ -77,21 +58,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void OnError(Throwable throwable) {
-        Log.i("Maps Throwable", throwable.getMessage());
-        Log.i("Maps Throwable", String.valueOf(throwable.getCause()));
-    }
-
-    private void onSuccess(JustEat justEat) {
-        for (Restaurant restaurant : justEat.getRestaurants()) {
-//            Log.i("restaurant.getName()", restaurant.getName());
-            LatLng location = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(location)).setTitle(restaurant.getName());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-        }
-        this.justEat = justEat;
-
-    }
+//    private void OnError(Throwable throwable) {
+//        Log.i("Maps Throwable", throwable.getMessage());
+//        Log.i("Maps Throwable", String.valueOf(throwable.getCause()));
+//    }
+//
+//    private void onSuccess(ParkingSpot justEat) {
+//        for (Restaurant restaurant : justEat.getRestaurants()) {
+////            Log.i("restaurant.getName()", restaurant.getName());
+//            LatLng location = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
+//            mMap.addMarker(new MarkerOptions().position(location)).setTitle(restaurant.getName());
+//            mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+//        }
+//        this.justEat = justEat;
+//
+//    }
 
     /**
      * Manipulates the map once available.
@@ -110,10 +91,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //            LatLng sydney = new LatLng(l.latitude,l.longitude);
 //            mMap.addMarker(new MarkerOptions().position(sydney));
 //        }
-
-        interactor_2.getCakeList().observeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread()).subscribe(this::onSuccess, this::OnError);
+//
+//        interactor_2.getCakeList().observeOn(AndroidSchedulers.mainThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.newThread()).subscribe(this::onSuccess, this::OnError);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling

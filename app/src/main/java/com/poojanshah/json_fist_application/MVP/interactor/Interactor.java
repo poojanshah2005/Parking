@@ -1,7 +1,9 @@
 package com.poojanshah.json_fist_application.MVP.interactor;
 
 import com.poojanshah.json_fist_application.Injection.components.APIComponent;
-import com.poojanshah.json_fist_application.model.JustEat;
+import com.poojanshah.json_fist_application.model.ParkingSpot;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 
@@ -13,6 +15,6 @@ public interface Interactor {
 
     public void initiateInjectionGraph(APIComponent apiComponent);
 
-    Observable<JustEat> getCakeList();
+    Observable<List<ParkingSpot>> getCakeList();
 
 }

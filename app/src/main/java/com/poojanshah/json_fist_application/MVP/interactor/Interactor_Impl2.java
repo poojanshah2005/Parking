@@ -2,8 +2,10 @@ package com.poojanshah.json_fist_application.MVP.interactor;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.poojanshah.json_fist_application.Constants;
-import com.poojanshah.json_fist_application.model.JustEat;
+import com.poojanshah.json_fist_application.model.ParkingSpot;
 import com.poojanshah.json_fist_application.service.RequestInterface;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
@@ -44,7 +46,7 @@ public class Interactor_Impl2 implements Interactor2 {
     }
 
     @Override
-    public Observable<JustEat> getCakeList() {
-        return requestInterface.getResult("SE19");
+    public Observable<List<ParkingSpot>> getCakeList() {
+        return requestInterface.getResult(51D,51D);
     }
 }

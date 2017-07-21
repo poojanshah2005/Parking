@@ -5,6 +5,6 @@ package com.poojanshah.json_fist_application;
  */
 
 public class Constants {
-    public static final String BASE_URL = "https://public.je-apis.com";
-    public static final String DATA_TO_FETCH = "/restaurants";
+    public static final String BASE_URL = "http://ridecellparking.herokuapp.com/api/v1/parkinglocations/";
+    public static final String DATA_TO_FETCH = "search?lat=0.0000&lng=0.0000";
 }

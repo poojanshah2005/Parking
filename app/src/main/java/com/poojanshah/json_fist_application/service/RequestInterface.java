@@ -1,11 +1,12 @@
 package com.poojanshah.json_fist_application.service;
 
 import com.poojanshah.json_fist_application.Constants;
-import com.poojanshah.json_fist_application.model.JustEat;
+import com.poojanshah.json_fist_application.model.ParkingSpot;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 /**
@@ -13,15 +14,9 @@ import retrofit2.http.Query;
  */
 
 public interface RequestInterface {
-    @Headers({
-            "Accept-Tenant: uk",
-            "Accept-Language: en-GB",
-            "Authorization: Basic VGVjaFRlc3RBUEk6dXNlcjI=",
-            "Host: public.je-apis.com"
 
-    })
     @GET(Constants.DATA_TO_FETCH)
-    Observable<JustEat> getResult(@Query("q") String location);
+    Observable<List<ParkingSpot>> getResult(@Query("lng") Double lng, @Query("lat") Double lat);
 
 
 
