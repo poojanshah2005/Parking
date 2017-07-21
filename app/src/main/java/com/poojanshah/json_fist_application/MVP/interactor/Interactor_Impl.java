@@ -20,26 +20,28 @@ public class Interactor_Impl implements Interactor {
     RequestInterface requestInterface;
 
     public Interactor_Impl() {
-//        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-//
-//        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-////        File outputDir = context.getCacheDir();
-////        Cache cache = new Cache(outputDir, 50000);
-//
-//        okHttpClient = new OkHttpClient.Builder()
-//                .addInterceptor(httpLoggingInterceptor)
-//                .build();
-//
-//
-//        retrofit = new Retrofit.Builder()
-//                .baseUrl(Constants.BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-////                .client(okHttpClient)
-//                .build();
-//
-//        requestInterface = retrofit.create(RequestInterface.class);
-//        return retrofit.create(RequestInterface.class);
+/*
+HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+
+httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        File outputDir = context.getCacheDir();
+//        Cache cache = new Cache(outputDir, 50000);
+
+okHttpClient = new OkHttpClient.Builder()
+.addInterceptor(httpLoggingInterceptor)
+.build();
+
+
+retrofit = new Retrofit.Builder()
+.baseUrl(Constants.BASE_URL)
+.addConverterFactory(GsonConverterFactory.create())
+.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//                .client(okHttpClient)
+.build();
+
+requestInterface = retrofit.create(RequestInterface.class);
+return retrofit.create(RequestInterface.class);
+*/
     }
 
     /**
@@ -52,7 +54,7 @@ public class Interactor_Impl implements Interactor {
     }
 
     @Override
-    public Observable<List<ParkingSpot>> getCakeList() {
-        return requestInterface.getResult(51D,51D);
+    public Observable<List<ParkingSpot>> getCakeList(double lat, double lng) {
+        return requestInterface.getResult(lat, lng);
     }
 }

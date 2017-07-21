@@ -17,8 +17,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.poojanshah.json_fist_application.MVP.ICakeListPresenter;
-import com.poojanshah.json_fist_application.MVP.ICakeListView;
 import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
 import com.poojanshah.json_fist_application.model.ParkingSpot;
 
@@ -42,14 +40,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
     private GoogleMap mMap;
 
-//    ArrayList<LatLng> latLngs;
-
     Interactor_Impl2 interactor_2;
-//
-//    JustEat justEat;
-
-    ICakeListView iCakeListView;
-
 
     public MapsActivity() {
     }

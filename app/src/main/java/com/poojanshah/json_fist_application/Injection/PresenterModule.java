@@ -1,9 +1,6 @@
 package com.poojanshah.json_fist_application.Injection;
 
-import com.poojanshah.json_fist_application.MVP.CakeListPresenterImpl;
 import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl;
-
-import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;

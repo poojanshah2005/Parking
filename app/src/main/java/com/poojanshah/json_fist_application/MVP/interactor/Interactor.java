@@ -15,6 +15,6 @@ public interface Interactor {
 
     public void initiateInjectionGraph(APIComponent apiComponent);
 
-    Observable<List<ParkingSpot>> getCakeList();
+    Observable<List<ParkingSpot>> getCakeList(double lat, double lng);
 
 }
