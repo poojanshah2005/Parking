@@ -20,9 +20,11 @@ import io.reactivex.schedulers.Schedulers;
  * Created by shahp on 14/07/2017.
  */
 
-public class CakeListPresenterImpl  extends  BasePresenter<ICakeListView> implements  ICakeListPresenter{
+public class CakeListPresenterImpl  implements  ICakeListPresenter{
     @Inject
     Interactor_Impl interactor_;
+
+    ICakeListView iCakeListView;
 
     public void setContext(Context context) {
         this.context = context;
@@ -37,12 +39,11 @@ public class CakeListPresenterImpl  extends  BasePresenter<ICakeListView> implem
 
     @Override
     public void attachView(ICakeListView MVPView) {
-            super.attachView(MVPView);
+        this.iCakeListView = MVPView;
     }
 
     @Override
     public void detachView() {
-    super.detachView();
     }
 
     @Override
@@ -63,24 +64,7 @@ public class CakeListPresenterImpl  extends  BasePresenter<ICakeListView> implem
         Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
     }
 
-//    private void onSuccess(ParkingSpot parkingSpot) {
-//
-////        for(Restaurant restaurant: justEat.getRestaurants()){
-////            Log.i("restaurant.getName()", restaurant.getName());
-////        }
-////        openMaps();
-//    }
 
-    public void openMaps(){
-        Intent intent = new Intent(context, MapsActivity.class);
-//        ArrayList<LatLng> latLngs = new ArrayList<>();
-//        for(Restaurant restaurant: justEat.getRestaurants()){
-//            LatLng location = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
-//            latLngs.add(location);
-//        }
-//        intent.putExtra("justEat",latLngs);
-        context.startActivity(intent);
-    }
 
     public void injectForData(APIComponent apiComponent) {
         interactor_.initiateInjectionGraph(apiComponent);

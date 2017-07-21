@@ -12,8 +12,13 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.poojanshah.json_fist_application.MVP.ICakeListPresenter;
+import com.poojanshah.json_fist_application.MVP.ICakeListView;
 import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
 import com.poojanshah.json_fist_application.model.ParkingSpot;
 
@@ -22,7 +27,7 @@ import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener,OnMapReadyCallback {
 
 //    @Inject
 //    Interactor_Impl interactor_;
@@ -42,6 +47,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Interactor_Impl2 interactor_2;
 //
 //    JustEat justEat;
+
+    ICakeListView iCakeListView;
 
 
     public MapsActivity() {
@@ -88,9 +95,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mMap.setMyLocationEnabled(true);
 
-        interactor_2.getCakeList().observeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
+        performCakeListDisplay();
+
+//        // Set a listener for marker click.
+//        mMap.setOnMarkerClickListener(this);
+
 
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
@@ -100,10 +109,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void onSuccess(List<ParkingSpot> parkingSpots) {
         for(ParkingSpot parking:parkingSpots){
-            Log.i("Parking57",parking.getName());
+            BitmapDescriptor bitmapDescriptor;
+            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+//            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+            if(parking.getIsReserved()){
+                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+            }else{
+                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+            }
+
+
+            Log.i("Parking57",parking.getName() + " " + parking.getIsReserved());
             LatLng latLng = new LatLng(parking.getLat(),parking.getLng());
-            mMap.addMarker(new MarkerOptions().position(latLng)).setTitle(parking.getName());
+            MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(bitmapDescriptor).title(parking.getName());
+            mMap.addMarker(markerOptions);
         }
+        // Set a listener for marker click.
+        mMap.setOnMarkerClickListener(this);
+
     }
 
     private void OnError(Throwable throwable) {
@@ -129,5 +152,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void performCakeListDisplay() {
+        interactor_2.getCakeList(51.508862, -0.069227).observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        // Retrieve the data from the marker.
+        Integer clickCount = (Integer) marker.getTag();
+
+        // Check if a click count was set, then display the click count.
+        if (clickCount != null) {
+            clickCount = clickCount + 1;
+            marker.setTag(clickCount);
+            Toast.makeText(this,
+                    marker.getTitle() +
+                            " has been clicked " + clickCount + " times.",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        // Return false to indicate that we have not consumed the event and that we wish
+        // for the default behavior to occur (which is for the camera to move such that the
+        // marker is centered and for the marker's info window to open, if it has one).
+        return false;
     }
 }
