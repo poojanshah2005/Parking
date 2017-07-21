@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
 import com.poojanshah.json_fist_application.model.ParkingSpot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -40,6 +41,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     Interactor_Impl2 interactor_2;
     private GoogleMap mMap;
 
+    List<Marker> markers;
+
     public MapsActivity() {
     }
 
@@ -52,6 +55,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         interactor_2 = new Interactor_Impl2();
+        markers = new ArrayList<>();
     }
 
 
@@ -109,10 +113,17 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
 
             LatLng latLng = new LatLng(parking.getLat(),parking.getLng());
-//            Log.i("Parking57",parking.getName() + " " + parking.getIsReserved());
+
             Log.i("Parking57",latLng.toString());
-            MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(bitmapDescriptor).title(parking.getName());
-            mMap.addMarker(markerOptions);
+//            Log.i("Parking57",parking.getName() + " " + parking.getIsReserved());
+//            MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(bitmapDescriptor).title(parking.getName());
+//            mMap.addMarker(markerOptions);
+//            LatLng PERTH = new LatLng(-31.952854, 115.857342);
+            Marker  marker = mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title(parking.getName()));
+            marker.setTag(parking.getId());
+            markers.add(marker);
         }
         // Set a listener for marker click.
         mMap.setOnMarkerClickListener(this);
@@ -155,15 +166,13 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     public boolean onMarkerClick(Marker marker) {
 
         // Retrieve the data from the marker.
-        Integer clickCount = (Integer) marker.getTag();
+        Long clickCount = (Long) marker.getTag();
 
         // Check if a click count was set, then display the click count.
         if (clickCount != null) {
-            clickCount = clickCount + 1;
-            marker.setTag(clickCount);
+            long tag = (long) marker.getTag();
             Toast.makeText(this,
-                    marker.getTitle() +
-                            " has been clicked " + clickCount + " times.",
+                    "Marker ID: " + tag,
                     Toast.LENGTH_SHORT).show();
         }
 
