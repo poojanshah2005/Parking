@@ -106,7 +106,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
 //            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
             if(parking.getIsReserved()){
-                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE);
+                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
             }else{
                 bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
             }
@@ -121,7 +121,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 //            LatLng PERTH = new LatLng(-31.952854, 115.857342);
             Marker  marker = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
-                    .title(parking.getName()));
+                    .title(parking.getName())
+                    .icon(bitmapDescriptor));
             marker.setTag(parking.getId());
             markers.add(marker);
         }
