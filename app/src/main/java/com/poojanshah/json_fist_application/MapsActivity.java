@@ -6,12 +6,21 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
+import com.poojanshah.json_fist_application.model.ParkingSpot;
+
+import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -48,31 +57,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         interactor_2 = new Interactor_Impl2();
+            }
 
-//        Bundle extras = getIntent().getExtras();
-//        latLngs = new ArrayList<>();
-//
-//        if (extras != null) {
-//            latLngs = (ArrayList<LatLng>) extras.get("justEat");
-//        }
-
-    }
-
-//    private void OnError(Throwable throwable) {
-//        Log.i("Maps Throwable", throwable.getMessage());
-//        Log.i("Maps Throwable", String.valueOf(throwable.getCause()));
-//    }
-//
-//    private void onSuccess(ParkingSpot justEat) {
-//        for (Restaurant restaurant : justEat.getRestaurants()) {
-////            Log.i("restaurant.getName()", restaurant.getName());
-//            LatLng location = new LatLng(restaurant.getLatitude(), restaurant.getLongitude());
-//            mMap.addMarker(new MarkerOptions().position(location)).setTitle(restaurant.getName());
-//            mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-//        }
-//        this.justEat = justEat;
-//
-//    }
 
     /**
      * Manipulates the map once available.
@@ -97,24 +83,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                .subscribeOn(Schedulers.newThread()).subscribe(this::onSuccess, this::OnError);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            // Check Permissions Now
             askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
             return;
         }
         mMap.setMyLocationEnabled(true);
+
+        interactor_2.getCakeList().observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
 
         // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
+
+    private void onSuccess(List<ParkingSpot> parkingSpots) {
+        for(ParkingSpot parking:parkingSpots){
+            Log.i("Parking57",parking.getName());
+            LatLng latLng = new LatLng(parking.getLat(),parking.getLng());
+            mMap.addMarker(new MarkerOptions().position(latLng)).setTitle(parking.getName());
+        }
+    }
+
+    private void OnError(Throwable throwable) {
+        Log.i("CPL Throwable", throwable.getMessage());
+        Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
+    }
+
 
     private void askForPermission(String permission, Integer requestCode) {
         if (ContextCompat.checkSelfPermission(MapsActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {

@@ -18,10 +18,10 @@ public class ParkingSpot implements Parcelable
     private Long id;
     @SerializedName("lat")
     @Expose
-    private String lat;
+    private Double lat;
     @SerializedName("lng")
     @Expose
-    private String lng;
+    private Double lng;
     @SerializedName("name")
     @Expose
     private String name;
@@ -49,8 +49,8 @@ public class ParkingSpot implements Parcelable
         public ParkingSpot createFromParcel(Parcel in) {
             ParkingSpot instance = new ParkingSpot();
             instance.id = ((Long) in.readValue((Long.class.getClassLoader())));
-            instance.lat = ((String) in.readValue((String.class.getClassLoader())));
-            instance.lng = ((String) in.readValue((String.class.getClassLoader())));
+            instance.lat = ((Double) in.readValue((String.class.getClassLoader())));
+            instance.lng = ((Double) in.readValue((String.class.getClassLoader())));
             instance.name = ((String) in.readValue((String.class.getClassLoader())));
             instance.costPerMinute = ((String) in.readValue((String.class.getClassLoader())));
             instance.maxReserveTimeMins = ((Long) in.readValue((Long.class.getClassLoader())));
@@ -75,19 +75,19 @@ public class ParkingSpot implements Parcelable
         this.id = id;
     }
 
-    public String getLat() {
+    public Double getLat() {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(Double lat) {
         this.lat = lat;
     }
 
-    public String getLng() {
+    public Double getLng() {
         return lng;
     }
 
-    public void setLng(String lng) {
+    public void setLng(Double lng) {
         this.lng = lng;
     }
 

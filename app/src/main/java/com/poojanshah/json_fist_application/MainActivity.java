@@ -1,5 +1,6 @@
 package com.poojanshah.json_fist_application;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -19,10 +20,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ((MyApp)getApplicationContext()).getiPresenterComponent().inject(this);
         setInjections();
-        cakeListPresenter.setContext(getApplicationContext());
-        cakeListPresenter.performCakeListDisplay();
-//        Intent intent = new Intent(MainActivity.this,MapsActivity.class);
-//        startActivity(intent);
+//        cakeListPresenter.setContext(getApplicationContext());
+//        cakeListPresenter.performCakeListDisplay();
+        Intent intent = new Intent(MainActivity.this,MapsActivity.class);
+        startActivity(intent);
     }
 
     private void setInjections() {
