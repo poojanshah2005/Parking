@@ -2,6 +2,7 @@ package com.poojanshah.json_fist_application;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
@@ -42,6 +44,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     private GoogleMap mMap;
 
     List<Marker> markers;
+    List<ParkingSpot> parkingSpots;
 
     public MapsActivity() {
     }
@@ -71,6 +74,19 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.style_json));
+
+            if (!success) {
+                Log.e("MapsActivityRaw", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("MapsActivityRaw", "Can't find style.", e);
+        }
         mMap.setOnMarkerClickListener(this);
 //        for(LatLng l:latLngs){
 ////            Log.i("onMapReady", l.longitude + " " + l.latitude);
@@ -101,6 +117,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     }
 
     private void onSuccess(List<ParkingSpot> parkingSpots) {
+        this.parkingSpots = parkingSpots;
         for(ParkingSpot parking:parkingSpots){
             BitmapDescriptor bitmapDescriptor;
             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
@@ -171,10 +188,24 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
         // Check if a click count was set, then display the click count.
         if (clickCount != null) {
-            long tag = (long) marker.getTag();
-            Toast.makeText(this,
-                    "Marker ID: " + tag,
-                    Toast.LENGTH_SHORT).show();
+            ParkingSpot parking = parkingSpots.get(0);
+
+            for(ParkingSpot parkingListItem : parkingSpots) {
+                if (marker.getTag().equals(parkingListItem.getId())) {
+                    parking = parkingListItem;
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("Marker ID: ");
+                stringBuilder.append(parking.getLat() + " " + parking.getLng());
+                stringBuilder.append(("getIsReserved: " + parking.getIsReserved()));
+                stringBuilder.append(("getReservedUntil: " + parking.getReservedUntil()));
+
+                long tag = (long) marker.getTag();
+                Toast.makeText(this,
+                        stringBuilder.toString(),
+                        Toast.LENGTH_SHORT).show();
+            }
         }
 
         // Return false to indicate that we have not consumed the event and that we wish
