@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,20 +61,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     static final Integer GPS_SETTINGS = 0x7;
     private static final int REQUEST_FINE_LOCATION = 0x1;
     Interactor_Impl2 interactor_2;
-    private GoogleMap mMap;
-
     List<Marker> markers;
     List<ParkingSpot> parkingSpots;
-
     Realm realm;
     RealmHelper realmHelper;
-
+    Location location;
+    private GoogleMap mMap;
     private LocationRequest mLocationRequest;
-
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
-
-    Location location;
     private boolean run = false;
 
     public MapsActivity() {
@@ -279,13 +275,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     TextView textViewMin = (TextView) v.findViewById(R.id.tvmin);
                     TextView textViewMax = (TextView) v.findViewById(R.id.tvMax);
                     TextView textViewUntil = (TextView) v.findViewById(R.id.tvuntil);
+                    Button button = (Button) v.findViewById(R.id.button3);
 
-                     textViewName.setText(parking.getName());
-                     textViewLatLng.setText(parking.getLat() + " " + parking.getLng());
-                     textViewCost.setText(parking.getCostPerMinute());
-                     textViewMin.setText(String.valueOf(parking.getMinReserveTimeMins()));
-                     textViewMax.setText(String.valueOf(parking.getMaxReserveTimeMins()));
-                     textViewUntil.setText(String.valueOf(parking.getReservedUntil()));
+                    textViewName.setText("Name: " +parking.getName());
+                    textViewLatLng.setText("Location: " +parking.getLat() + " " + parking.getLng());
+                    textViewCost.setText("Cost Per Minute: " +parking.getCostPerMinute());
+                    textViewMin.setText("MinReserve Time: " +String.valueOf(parking.getMinReserveTimeMins()));
+                    textViewMax.setText("MaxReserve Time: " +String.valueOf(parking.getMaxReserveTimeMins()));
+                    textViewUntil.setText("Reserved Until: " +String.valueOf(parking.getReservedUntil()));
+                    button.setText("Reserve");
 
 
 //                    View popup=inflater.inflate(R.layout.popup, null);
