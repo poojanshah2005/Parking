@@ -16,4 +16,5 @@ public interface Interactor2 {
         Observable<List<ParkingSpot>> getCakeList(double lat, double lng);
         Observable<ParkingSpot> getSpot(int id);
         Call<ParkingSpot> getSingleResultW(int id);
+        Observable<ParkingSpot> getSinglePost(int id);
 }

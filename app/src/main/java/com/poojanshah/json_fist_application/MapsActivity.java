@@ -56,6 +56,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.widget.Toast.LENGTH_LONG;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 import static java.lang.Math.toIntExact;
 
@@ -247,8 +248,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         performCakeListDisplay();
     }
 
+    public void performCakeListDisplay() {
+        double lat = 51.508862 ,lng = -0.069227;
+        if(location != null){
+            lat = location.getLatitude();
+            lng = location.getLongitude();
+            Log.i("Location", lat + " " + lng);
+        }
+        interactor_2.getCakeList(lat, lng).observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
+
+    }
+
     private void onSuccess(List<ParkingSpot> parkingSpots) {
         displayParkingSpots(parkingSpots);
+    }
+
+    private void onSuccess(ParkingSpot parkingSpot) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Marker ID: ");
+        stringBuilder.append(parkingSpot.getLat() + " " + parkingSpot.getLng());
+        stringBuilder.append(("getIsReserved: " + parkingSpot.getIsReserved()));
+        stringBuilder.append(("getReservedUntil: " + parkingSpot.getReservedUntil()));
+        Toast.makeText(this,
+                stringBuilder.toString() ,
+                Toast.LENGTH_SHORT).show();
+    }
+
+    private void OnError(Throwable throwable) {
+        Log.i("CPL Throwable", throwable.getMessage());
+        Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
+        displayParkingSpots(realmHelper.getParkingList());
     }
 
     private void displayParkingSpots(List<ParkingSpot> parkingSpots) {
@@ -307,12 +338,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             Log.e("onFailure", t.toString());
                         }
                     });
-
                     if(parkingSpots1[0]== null){
                         parkingSpots1[0] = parking;
                     }
-
-
                     textViewName.setText("Name: " +parkingSpots1[0].getName());
                     textViewLatLng.setText("Location: " +parkingSpots1[0].getLat() + " " + parkingSpots1[0].getLng());
                     textViewCost.setText("Cost Per Minute: " +parkingSpots1[0].getCostPerMinute());
@@ -325,7 +353,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         button.setVisibility(View.VISIBLE);
                         button.setText("Reserve");
                     }
-
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -334,27 +361,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
                     return v;
                 }
-
             });
-
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     Log.i("CLick 308","Click");
+                    int a = (int) marker.getTag();
+                    Log.i("CLick 369", String.valueOf(a));
+                    interactor_2.getSinglePost(a).observeOn(AndroidSchedulers.mainThread())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccessPost, this:: OnErrorPost);
+                }
+
+                private void OnErrorPost(Throwable throwable) {
+                    Log.i("CPL Throwable", throwable.getMessage());
+                    Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
+                    Toast.makeText(getApplicationContext(),"You can't book this Parking Spot", LENGTH_LONG).show();
+                }
+
+                private void onSuccessPost(ParkingSpot parkingSpot) {
+                    Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
                 }
             });
-
         }
-        // Set a listener for marker click.
-//        mMap.setOnMarkerClickListener(this);
-//        mMap.setOnInfoWindowClickListener(this);
     }
 
-    private void OnError(Throwable throwable) {
-        Log.i("CPL Throwable", throwable.getMessage());
-        Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
-        displayParkingSpots(realmHelper.getParkingList());
-    }
+
 
     private void askForPermission(String permission, Integer requestCode) {
         if (ContextCompat.checkSelfPermission(MapsActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -375,18 +407,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void performCakeListDisplay() {
-        double lat = 51.508862 ,lng = -0.069227;
-        if(location != null){
-            lat = location.getLatitude();
-            lng = location.getLongitude();
-            Log.i("Location", lat + " " + lng);
-        }
-        interactor_2.getCakeList(lat, lng).observeOn(AndroidSchedulers.mainThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
 
-    }
 
 //    @Override
 //    public boolean onMarkerClick(Marker marker) {
@@ -431,14 +452,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
     }
 
-    private void onSuccess(ParkingSpot parkingSpot) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Marker ID: ");
-        stringBuilder.append(parkingSpot.getLat() + " " + parkingSpot.getLng());
-        stringBuilder.append(("getIsReserved: " + parkingSpot.getIsReserved()));
-        stringBuilder.append(("getReservedUntil: " + parkingSpot.getReservedUntil()));
-        Toast.makeText(this,
-                stringBuilder.toString() ,
-                Toast.LENGTH_SHORT).show();
-    }
+
 }

@@ -61,4 +61,9 @@ public class Interactor_Impl2 implements Interactor2 {
     public Call<ParkingSpot> getSingleResultW(int id) {
         return requestInterface.getSingleResultW(id);
     }
+
+    @Override
+    public Observable<ParkingSpot> getSinglePost(int id) {
+        return requestInterface.getSinglePost(id);
+    }
 }

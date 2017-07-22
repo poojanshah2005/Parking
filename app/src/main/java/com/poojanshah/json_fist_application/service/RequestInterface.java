@@ -10,6 +10,7 @@ import io.realm.internal.ObserverPairList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -24,6 +25,9 @@ public interface RequestInterface {
 
     @GET("{id}")
     Observable<ParkingSpot> getSingleResult(@Path("id") int id);
+
+    @POST("{id}/reserve")
+    Observable<ParkingSpot> getSinglePost(@Path("id") int id);
 
     @GET("{id}")
     Call<ParkingSpot> getSingleResultW(@Path("id") int id);
