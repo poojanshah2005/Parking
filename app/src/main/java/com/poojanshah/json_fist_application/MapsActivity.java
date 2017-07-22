@@ -124,27 +124,23 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     }
 
     private void onSuccess(List<ParkingSpot> parkingSpots) {
+        displayParkingSpots(parkingSpots);
+    }
+
+    private void displayParkingSpots(List<ParkingSpot> parkingSpots) {
         this.parkingSpots = parkingSpots;
+        realmHelper.SaveData(parkingSpots);
         for(ParkingSpot parking:parkingSpots){
-            BitmapDescriptor bitmapDescriptor;
             realmHelper.SaveData(parking);
-            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-//            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+            BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
             if(parking.getIsReserved()){
                 bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
             }else{
                 bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
             }
-
-
             LatLng latLng = new LatLng(parking.getLat(),parking.getLng());
-
             Log.i("Parking57",latLng.toString());
-//            Log.i("Parking57",parking.getName() + " " + parking.getIsReserved());
-//            MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(bitmapDescriptor).title(parking.getName());
-//            mMap.addMarker(markerOptions);
-//            LatLng PERTH = new LatLng(-31.952854, 115.857342);
-            Marker  marker = mMap.addMarker(new MarkerOptions()
+            Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title(parking.getName())
                     .icon(bitmapDescriptor));
@@ -153,12 +149,12 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         }
         // Set a listener for marker click.
         mMap.setOnMarkerClickListener(this);
-
     }
 
     private void OnError(Throwable throwable) {
         Log.i("CPL Throwable", throwable.getMessage());
         Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
+        displayParkingSpots(realmHelper.getParkingList());
     }
 
 

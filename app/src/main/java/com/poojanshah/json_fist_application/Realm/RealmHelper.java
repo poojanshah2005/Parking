@@ -2,7 +2,11 @@ package com.poojanshah.json_fist_application.Realm;
 
 import com.poojanshah.json_fist_application.model.ParkingSpot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by shahp on 12/07/2017.
@@ -21,9 +25,26 @@ public class RealmHelper {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.copyToRealm(parkingSpot);
+                realm.copyToRealmOrUpdate(parkingSpot);
             }
         });
+    }
+    public void SaveData(List<ParkingSpot> parkingSpot){
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(parkingSpot);
+            }
+        });
+    }
+
+    public List<ParkingSpot> getParkingList(){
+        ArrayList<ParkingSpot> parkingList = new ArrayList<>();
+        RealmResults<ParkingSpot> result = realm.where(ParkingSpot.class).findAll();
+        for(ParkingSpot spot: result){
+            parkingList.add(spot);
+        }
+        return parkingList;
     }
 
 //    public void saveCake(Cake cake){

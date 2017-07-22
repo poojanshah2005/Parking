@@ -13,12 +13,14 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class ParkingSpot extends RealmObject implements Parcelable
 {
 
     @SerializedName("id")
     @Expose
+    @PrimaryKey
     private Long id;
     @SerializedName("lat")
     @Expose
