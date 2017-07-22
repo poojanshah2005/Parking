@@ -10,6 +10,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -57,7 +58,7 @@ public class Interactor_Impl2 implements Interactor2 {
     }
 
     @Override
-    public ParkingSpot getSingleResult(int id, Callback<List<ParkingSpot>> callback) {
-        return requestInterface.getSingleResult(id,callback);
+    public Call<ParkingSpot> getSingleResultW(int id) {
+        return requestInterface.getSingleResultW(id);
     }
 }

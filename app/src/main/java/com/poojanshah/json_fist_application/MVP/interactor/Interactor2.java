@@ -5,6 +5,7 @@ import com.poojanshah.json_fist_application.model.ParkingSpot;
 import java.util.List;
 
 import io.reactivex.Observable;
+import retrofit2.Call;
 import retrofit2.Callback;
 
 /**
@@ -14,5 +15,5 @@ import retrofit2.Callback;
 public interface Interactor2 {
         Observable<List<ParkingSpot>> getCakeList(double lat, double lng);
         Observable<ParkingSpot> getSpot(int id);
-        ParkingSpot getSingleResult(int id, Callback<List<ParkingSpot>> callback);
+        Call<ParkingSpot> getSingleResultW(int id);
 }

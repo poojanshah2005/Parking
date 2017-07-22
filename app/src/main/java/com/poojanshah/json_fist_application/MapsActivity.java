@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.HttpException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -40,10 +41,15 @@ import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
 import com.poojanshah.json_fist_application.Realm.RealmHelper;
 import com.poojanshah.json_fist_application.model.ParkingSpot;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.observers.DisposableLambdaObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import retrofit2.Call;
@@ -284,12 +290,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     TextView textViewUntil = (TextView) v.findViewById(R.id.tvuntil);
                     Button button = (Button) v.findViewById(R.id.button3);
 
-                    textViewName.setText("Name: " +parking.getName());
-                    textViewLatLng.setText("Location: " +parking.getLat() + " " + parking.getLng());
-                    textViewCost.setText("Cost Per Minute: " +parking.getCostPerMinute());
-                    textViewMin.setText("MinReserve Time: " +String.valueOf(parking.getMinReserveTimeMins()));
-                    textViewMax.setText("MaxReserve Time: " +String.valueOf(parking.getMaxReserveTimeMins()));
-                    textViewUntil.setText("Reserved Until: " +String.valueOf(parking.getReservedUntil()));
+
+//                    interactor_2.getSpot(parking.getId());
+
+                    final ParkingSpot[] parkingSpots1 = new ParkingSpot[1];
+                    Call<ParkingSpot> call = interactor_2.getSingleResultW(parking.getId());
+                    call.enqueue(new Callback<ParkingSpot>() {
+                        @Override
+                        public void onResponse(Call<ParkingSpot> call, Response<ParkingSpot> response) {
+                            parkingSpots1[0] = response.body();
+                        }
+
+                        @Override
+                        public void onFailure(Call<ParkingSpot> call, Throwable t) {
+                            // Log error here since request failed
+                            Log.e("onFailure", t.toString());
+                        }
+                    });
+
+                    if(parkingSpots1[0]== null){
+                        parkingSpots1[0] = parking;
+                    }
+
+
+                    textViewName.setText("Name: " +parkingSpots1[0].getName());
+                    textViewLatLng.setText("Location: " +parkingSpots1[0].getLat() + " " + parkingSpots1[0].getLng());
+                    textViewCost.setText("Cost Per Minute: " +parkingSpots1[0].getCostPerMinute());
+                    textViewMin.setText("MinReserve Time: " +String.valueOf(parkingSpots1[0].getMinReserveTimeMins()));
+                    textViewMax.setText("MaxReserve Time: " +String.valueOf(parkingSpots1[0].getMaxReserveTimeMins()));
+                    textViewUntil.setText("Reserved Until: " +String.valueOf(parkingSpots1[0].getReservedUntil()));
                     if(parking.getIsReserved()){
                         button.setVisibility(View.INVISIBLE);
                     } else{
@@ -305,6 +334,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     });
                     return v;
                 }
+
             });
 
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {

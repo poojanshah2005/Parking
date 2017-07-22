@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.realm.internal.ObserverPairList;
+import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -25,7 +26,7 @@ public interface RequestInterface {
     Observable<ParkingSpot> getSingleResult(@Path("id") int id);
 
     @GET("{id}")
-    ParkingSpot getSingleResult(@Path("id") int id, Callback<List<ParkingSpot>> callback);
+    Call<ParkingSpot> getSingleResultW(@Path("id") int id);
 
 
 
