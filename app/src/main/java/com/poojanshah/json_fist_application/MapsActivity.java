@@ -363,7 +363,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     int a = (int) marker.getTag();
                     ParkingSpot parkingSpot = getParkingSpot(a);
 
-                    if (!parkingSpot.getIsReserved()) {
+//                    if (!parkingSpot.getIsReserved()) {
 
 
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
@@ -387,10 +387,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         Log.i("CPL Throwable", throwable.getMessage());
                                         Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
                                         Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
+                                        showMessage("You can't book this Parking Spot");
                                     }
 
                                     private void onSuccessPost(ParkingSpot parkingSpot) {
                                         Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
+                                        showMessage("You have been able to book this Parking Spot");
                                     }
                                 });
 
@@ -406,11 +408,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         alert11.show();
 
 
-                    }
+//                    }
 
                 }
             });
         }
+    }
+
+    private  void showMessage(String messagee){
+        AlertDialog alertDialog = new AlertDialog.Builder(MapsActivity.this).create();
+        alertDialog.setTitle("Alert");
+        alertDialog.setMessage(messagee);
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     private ParkingSpot getParkingSpot(int a) {
