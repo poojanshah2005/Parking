@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
+import com.poojanshah.json_fist_application.Realm.RealmHelper;
 import com.poojanshah.json_fist_application.model.ParkingSpot;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 
 public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener,OnMapReadyCallback {
 
@@ -46,6 +48,9 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     List<Marker> markers;
     List<ParkingSpot> parkingSpots;
 
+    Realm realm;
+    RealmHelper realmHelper;
+
     public MapsActivity() {
     }
 
@@ -53,6 +58,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        realm = Realm.getDefaultInstance();
+        realmHelper = new RealmHelper(realm);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -120,6 +127,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         this.parkingSpots = parkingSpots;
         for(ParkingSpot parking:parkingSpots){
             BitmapDescriptor bitmapDescriptor;
+            realmHelper.SaveData(parking);
             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
 //            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
             if(parking.getIsReserved()){
@@ -203,7 +211,7 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
                 long tag = (long) marker.getTag();
                 Toast.makeText(this,
-                        stringBuilder.toString(),
+                        stringBuilder.toString() ,
                         Toast.LENGTH_SHORT).show();
             }
         }

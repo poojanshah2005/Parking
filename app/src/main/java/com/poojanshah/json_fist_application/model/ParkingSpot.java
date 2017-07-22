@@ -10,7 +10,11 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ParkingSpot implements Parcelable
+import java.util.Date;
+
+import io.realm.RealmObject;
+
+public class ParkingSpot extends RealmObject implements Parcelable
 {
 
     @SerializedName("id")
@@ -39,7 +43,7 @@ public class ParkingSpot implements Parcelable
     private Boolean isReserved;
     @SerializedName("reserved_until")
     @Expose
-    private Object reservedUntil;
+    private Date reservedUntil;
     public final static Parcelable.Creator<ParkingSpot> CREATOR = new Creator<ParkingSpot>() {
 
 
@@ -56,7 +60,7 @@ public class ParkingSpot implements Parcelable
             instance.maxReserveTimeMins = ((Long) in.readValue((Long.class.getClassLoader())));
             instance.minReserveTimeMins = ((Long) in.readValue((Long.class.getClassLoader())));
             instance.isReserved = ((Boolean) in.readValue((Boolean.class.getClassLoader())));
-            instance.reservedUntil = ((Object) in.readValue((Object.class.getClassLoader())));
+            instance.reservedUntil = ((Date) in.readValue((Object.class.getClassLoader())));
             return instance;
         }
 
@@ -135,7 +139,7 @@ public class ParkingSpot implements Parcelable
         return reservedUntil;
     }
 
-    public void setReservedUntil(Object reservedUntil) {
+    public void setReservedUntil(Date reservedUntil) {
         this.reservedUntil = reservedUntil;
     }
 

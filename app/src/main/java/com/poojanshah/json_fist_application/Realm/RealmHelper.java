@@ -1,5 +1,7 @@
 package com.poojanshah.json_fist_application.Realm;
 
+import com.poojanshah.json_fist_application.model.ParkingSpot;
+
 import io.realm.Realm;
 
 /**
@@ -13,18 +15,16 @@ public class RealmHelper {
         this.realm = realm;
     }
 
-//    public void saveData(CakesModel cakesModel){
-//        Cake cake = new Cake();
-//        cake.setDesc(cakesModel.getDesc());
-//        cake.setImage(cakesModel.getImage());
-//        cake.setTitle(cakesModel.getTitle());
-//        realm.executeTransaction(new Realm.Transaction() {
-//            @Override
-//            public void execute(Realm realm) {
-//                realm.copyToRealmOrUpdate(cake);
-//            }
-//        });
-//    }
+
+
+    public void SaveData(ParkingSpot parkingSpot){
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealm(parkingSpot);
+            }
+        });
+    }
 
 //    public void saveCake(Cake cake){
 //        realm.executeTransaction(new Realm.Transaction() {

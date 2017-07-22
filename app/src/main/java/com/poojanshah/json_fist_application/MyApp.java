@@ -4,16 +4,6 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
-import com.poojanshah.json_fist_application.Injection.APIModule;
-import com.poojanshah.json_fist_application.Injection.AppModule;
-import com.poojanshah.json_fist_application.Injection.DaggerIPresenterComponent;
-import com.poojanshah.json_fist_application.Injection.IPresenterComponent;
-import com.poojanshah.json_fist_application.Injection.NetModule;
-import com.poojanshah.json_fist_application.Injection.components.APIComponent;
-import com.poojanshah.json_fist_application.Injection.components.DaggerAPIComponent;
-import com.poojanshah.json_fist_application.Injection.components.DaggerNetComponent;
-import com.poojanshah.json_fist_application.Injection.components.NetComponent;
-
 import java.security.SecureRandom;
 
 import io.realm.Realm;
@@ -27,36 +17,36 @@ public class MyApp extends Application {
     public static final String PREFS_NAME = "MyPrefsFile";
     public static final String KEY = "KEY";
 
-    IPresenterComponent iPresenterComponent;
-    NetComponent netComponent;
-    APIComponent apiComponent;
-
-    public NetComponent getNetComponent() {
-        return netComponent;
-    }
-
-    public APIComponent getApiComponent() {
-        return apiComponent;
-    }
-
-    public IPresenterComponent getiPresenterComponent() {
-        return iPresenterComponent;
-    }
+//    IPresenterComponent iPresenterComponent;
+//    NetComponent netComponent;
+//    APIComponent apiComponent;
+//
+//    public NetComponent getNetComponent() {
+//        return netComponent;
+//    }
+//
+//    public APIComponent getApiComponent() {
+//        return apiComponent;
+//    }
+//
+//    public IPresenterComponent getiPresenterComponent() {
+//        return iPresenterComponent;
+//    }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        iPresenterComponent= DaggerIPresenterComponent.create();
-        netComponent= DaggerNetComponent.builder()
-                .netModule(new NetModule(Constants.BASE_URL))
-                .appModule(new AppModule(this))
-                .build();
-
-        apiComponent= DaggerAPIComponent.builder()
-                .netComponent(netComponent)
-                .aPIModule(new APIModule())
-                .build();
+//        iPresenterComponent= DaggerIPresenterComponent.create();
+//        netComponent= DaggerNetComponent.builder()
+//                .netModule(new NetModule(Constants.BASE_URL))
+//                .appModule(new AppModule(this))
+//                .build();
+//
+//        apiComponent= DaggerAPIComponent.builder()
+//                .netComponent(netComponent)
+//                .aPIModule(new APIModule())
+//                .build();
 
         Realm.init(getApplicationContext());
 //        byte[] key = new byte[64];
