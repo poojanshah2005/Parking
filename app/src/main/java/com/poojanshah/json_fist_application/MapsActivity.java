@@ -1,6 +1,8 @@
 package com.poojanshah.json_fist_application;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
@@ -375,23 +377,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
-                    Log.i("CLick 308","Click");
-                    int a = (int) marker.getTag();
-                    Log.i("CLick 369", String.valueOf(a));
-                    interactor_2.getSinglePost(a).observeOn(AndroidSchedulers.mainThread())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccessPost, this:: OnErrorPost);
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
+                    builder1.setMessage("Do you want to try and book ths Parking Spot?");
+                    builder1.setCancelable(true);
+
+                    builder1.setPositiveButton(
+                            "Yes",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    Log.i("CLick 308","Click");
+                                    int a = (int) marker.getTag();
+                                    Log.i("CLick 369", String.valueOf(a));
+                                    interactor_2.getSinglePost(a).observeOn(AndroidSchedulers.mainThread())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccessPost, this:: OnErrorPost);
+                                    dialog.cancel();
+                                }
+
+                                private void OnErrorPost(Throwable throwable) {
+                                    Log.i("CPL Throwable", throwable.getMessage());
+                                    Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
+                                    Toast.makeText(getApplicationContext(),"You can't book this Parking Spot", LENGTH_LONG).show();
+                                }
+
+                                private void onSuccessPost(ParkingSpot parkingSpot) {
+                                    Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
+                                }
+                            });
+
+                    builder1.setNegativeButton(
+                            "No",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+
+                    AlertDialog alert11 = builder1.create();
+                    alert11.show();
+
+
+
                 }
 
-                private void OnErrorPost(Throwable throwable) {
-                    Log.i("CPL Throwable", throwable.getMessage());
-                    Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
-                    Toast.makeText(getApplicationContext(),"You can't book this Parking Spot", LENGTH_LONG).show();
-                }
 
-                private void onSuccessPost(ParkingSpot parkingSpot) {
-                    Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
-                }
             });
         }
     }
