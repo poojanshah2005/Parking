@@ -290,7 +290,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     textViewMin.setText("MinReserve Time: " +String.valueOf(parking.getMinReserveTimeMins()));
                     textViewMax.setText("MaxReserve Time: " +String.valueOf(parking.getMaxReserveTimeMins()));
                     textViewUntil.setText("Reserved Until: " +String.valueOf(parking.getReservedUntil()));
-                    button.setText("Reserve");
+                    if(parking.getIsReserved()){
+                        button.setVisibility(View.INVISIBLE);
+                    } else{
+                        button.setVisibility(View.VISIBLE);
+                        button.setText("Reserve");
+                    }
 
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -306,7 +311,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     Log.i("CLick 308","Click");
-                    Button button = (Button) findViewById(R.id.button3);
                 }
             });
 
@@ -321,7 +325,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
         displayParkingSpots(realmHelper.getParkingList());
     }
-
 
     private void askForPermission(String permission, Integer requestCode) {
         if (ContextCompat.checkSelfPermission(MapsActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
