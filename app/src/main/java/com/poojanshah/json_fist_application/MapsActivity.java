@@ -26,6 +26,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -288,19 +290,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for(ParkingSpot parking:parkingSpots){
             realmHelper.SaveData(parking);
             BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+
             if(parking.getIsReserved()){
                 bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
             }else{
                 bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
             }
+
             LatLng latLng = new LatLng(parking.getLat(),parking.getLng());
-            Log.i("Parking57",latLng.toString());
+//            Log.i("Parking57",latLng.toString() + " "  + parking.getIsReserved());
+            Log.i("Parking57", String.valueOf(parking.getIsReserved()));
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title(parking.getName())
                     .icon(bitmapDescriptor));
             marker.setTag(parking.getId());
             markers.add(marker);
+
+            if(!parking.getIsReserved()) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            }
+
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
                 public View getInfoWindow(Marker marker) {
