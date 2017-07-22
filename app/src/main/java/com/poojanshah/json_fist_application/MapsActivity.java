@@ -11,6 +11,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -44,7 +46,7 @@ import io.realm.Realm;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
 //    @Inject
 //    Interactor_Impl interactor_;
@@ -225,7 +227,8 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         } catch (Resources.NotFoundException e) {
             Log.e("MapsActivityRaw", "Can't find style.", e);
         }
-        mMap.setOnMarkerClickListener(this);
+//        mMap.setOnMarkerClickListener(this);
+//        mMap.setOnInfoWindowClickListener(this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             askForPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION);
@@ -259,9 +262,39 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                     .icon(bitmapDescriptor));
             marker.setTag(parking.getId());
             markers.add(marker);
+            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+                @Override
+                public View getInfoWindow(Marker marker) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+
+                    View v = getLayoutInflater().inflate(R.layout.infowindow, null);
+
+                    TextView textView = (TextView) v.findViewById(R.id.title);
+                    textView.setText(parking.getName());
+
+
+//                    View popup=inflater.inflate(R.layout.popup, null);
+//
+//                    View popup = new View(R.id.in)
+//
+//                    TextView tv=(TextView)popup.findViewById(R.id.title);
+//
+//                    tv.setText(marker.getTitle());
+//                    tv=(TextView)popup.findViewById(R.id.snippet);
+//                    tv.setText(marker.getSnippet());
+//
+//                    return(popup);
+                    return v;
+                }
+            });
         }
         // Set a listener for marker click.
-        mMap.setOnMarkerClickListener(this);
+//        mMap.setOnMarkerClickListener(this);
+//        mMap.setOnInfoWindowClickListener(this);
     }
 
     private void OnError(Throwable throwable) {
@@ -303,41 +336,41 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
 
     }
 
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-
-        // Retrieve the data from the marker.
-        Long clickCount = (Long) marker.getTag();
-
-        // Check if a click count was set, then display the click count.
-        if (clickCount != null) {
-            ParkingSpot parking = parkingSpots.get(0);
-
-            for(ParkingSpot parkingListItem : parkingSpots) {
-                if (marker.getTag().equals(parkingListItem.getId())) {
-                    parking = parkingListItem;
-                }
-
-//                StringBuilder stringBuilder = new StringBuilder();
-//                stringBuilder.append("Marker ID: ");
-//                stringBuilder.append(parking.getLat() + " " + parking.getLng());
-//                stringBuilder.append(("getIsReserved: " + parking.getIsReserved()));
-//                stringBuilder.append(("getReservedUntil: " + parking.getReservedUntil()));
-
-                long tag = (long) marker.getTag();
-//                Toast.makeText(this,
-//                        stringBuilder.toString() ,
-//                        Toast.LENGTH_SHORT).show();
-                getInfo((int) tag);
-
-            }
-        }
-
-        // Return false to indicate that we have not consumed the event and that we wish
-        // for the default behavior to occur (which is for the camera to move such that the
-        // marker is centered and for the marker's info window to open, if it has one).
-        return false;
-    }
+//    @Override
+//    public boolean onMarkerClick(Marker marker) {
+//
+//        // Retrieve the data from the marker.
+//        Long clickCount = (Long) marker.getTag();
+//
+//        // Check if a click count was set, then display the click count.
+//        if (clickCount != null) {
+//            ParkingSpot parking = parkingSpots.get(0);
+//
+//            for(ParkingSpot parkingListItem : parkingSpots) {
+//                if (marker.getTag().equals(parkingListItem.getId())) {
+//                    parking = parkingListItem;
+//                }
+//
+////                StringBuilder stringBuilder = new StringBuilder();
+////                stringBuilder.append("Marker ID: ");
+////                stringBuilder.append(parking.getLat() + " " + parking.getLng());
+////                stringBuilder.append(("getIsReserved: " + parking.getIsReserved()));
+////                stringBuilder.append(("getReservedUntil: " + parking.getReservedUntil()));
+//
+//                long tag = (long) marker.getTag();
+////                Toast.makeText(this,
+////                        stringBuilder.toString() ,
+////                        Toast.LENGTH_SHORT).show();
+//                getInfo((int) tag);
+//
+//            }
+//        }
+//
+//        // Return false to indicate that we have not consumed the event and that we wish
+//        // for the default behavior to occur (which is for the camera to move such that the
+//        // marker is centered and for the marker's info window to open, if it has one).
+//        return false;
+//    }
 
 
     private void getInfo(int id){
