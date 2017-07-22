@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 /**
@@ -25,7 +26,7 @@ public class RealmHelper {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(parkingSpot);
+                realm.copyToRealm(parkingSpot);
             }
         });
     }
@@ -33,7 +34,7 @@ public class RealmHelper {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(parkingSpot);
+                realm.copyToRealm(parkingSpot);
             }
         });
     }
@@ -46,6 +47,15 @@ public class RealmHelper {
         }
         return parkingList;
     }
+        public List<ParkingSpot> getMine() {
+            ArrayList<ParkingSpot> parkingList = new ArrayList<>();
+            RealmResults<ParkingSpot> result = realm.where(ParkingSpot.class).equalTo("isMine",true).findAllAsync();
+            for(ParkingSpot spot: result){
+                parkingList.add(spot);
+            }
+            return parkingList;
+    }
+
 
 //    public void saveCake(Cake cake){
 //        realm.executeTransaction(new Realm.Transaction() {

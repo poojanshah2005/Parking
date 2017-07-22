@@ -43,6 +43,16 @@ public class ParkingSpot extends RealmObject implements Parcelable
     @SerializedName("is_reserved")
     @Expose
     private Boolean isReserved;
+
+    public Boolean getMine() {
+        return isMine;
+    }
+
+    public void setMine(Boolean mine) {
+        isMine = mine;
+    }
+
+    private Boolean isMine;
     @SerializedName("reserved_until")
     @Expose
     private Date reservedUntil;

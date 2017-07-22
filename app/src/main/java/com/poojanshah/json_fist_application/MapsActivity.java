@@ -46,7 +46,10 @@ import com.poojanshah.json_fist_application.Realm.RealmHelper;
 import com.poojanshah.json_fist_application.model.ParkingSpot;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -259,6 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             lng = location.getLongitude();
             Log.i("Location", lat + " " + lng);
         }
+        displayParkingSpots(realmHelper.getMine());
         interactor_2.getCakeList(lat, lng).observeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
@@ -293,7 +297,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             realmHelper.SaveData(parking);
             BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
 
-            if(parking.getIsReserved()){
+
+            try {
+                if(parking.getReservedUntil()!= null){Date date = (Date) parking.getReservedUntil();
+                    if (date.before(new Date())) {
+//                        Log.i("displayParkingSpots304", date.toString());
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if(parking.getMine() != null &&parking.getMine()){
+                try {
+                    if(parking.getReservedUntil()!= null){Date date = (Date) parking.getReservedUntil();
+                        if (date.before(new Date())) {
+//                            Log.i("displayParkingSpots314", date.toString());
+                            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+//                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+            }else if(parking.getIsReserved()){
                 bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
             }else{
                 bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
@@ -393,6 +419,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     private void onSuccessPost(ParkingSpot parkingSpot) {
                                         Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
                                         showMessage("You have been able to book this Parking Spot");
+                                        parkingSpot.setMine(true);
+                                        realmHelper.SaveData(parkingSpot);
                                     }
                                 });
 
