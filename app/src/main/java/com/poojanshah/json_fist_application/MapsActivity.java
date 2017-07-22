@@ -273,8 +273,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     View v = getLayoutInflater().inflate(R.layout.infowindow, null);
 
-                    TextView textView = (TextView) v.findViewById(R.id.title);
-                    textView.setText(parking.getName());
+                    TextView textViewName = (TextView) v.findViewById(R.id.tvName);
+                    TextView textViewLatLng = (TextView) v.findViewById(R.id.tvlatlng);
+                    TextView textViewCost = (TextView) v.findViewById(R.id.tvcostperminute);
+                    TextView textViewMin = (TextView) v.findViewById(R.id.tvmin);
+                    TextView textViewMax = (TextView) v.findViewById(R.id.tvMax);
+                    TextView textViewUntil = (TextView) v.findViewById(R.id.tvuntil);
+
+                     textViewName.setText(parking.getName());
+                     textViewLatLng.setText(parking.getLat() + " " + parking.getLng());
+                     textViewCost.setText(parking.getCostPerMinute());
+                     textViewMin.setText(String.valueOf(parking.getMinReserveTimeMins()));
+                     textViewMax.setText(String.valueOf(parking.getMaxReserveTimeMins()));
+                     textViewUntil.setText(String.valueOf(parking.getReservedUntil()));
 
 
 //                    View popup=inflater.inflate(R.layout.popup, null);
