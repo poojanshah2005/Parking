@@ -21,7 +21,7 @@ public class ParkingSpot extends RealmObject implements Parcelable
     @SerializedName("id")
     @Expose
     @PrimaryKey
-    private Long id;
+    private Integer id;
     @SerializedName("lat")
     @Expose
     private Double lat;
@@ -54,7 +54,7 @@ public class ParkingSpot extends RealmObject implements Parcelable
         })
         public ParkingSpot createFromParcel(Parcel in) {
             ParkingSpot instance = new ParkingSpot();
-            instance.id = ((Long) in.readValue((Long.class.getClassLoader())));
+            instance.id = ((Integer) in.readValue((Long.class.getClassLoader())));
             instance.lat = ((Double) in.readValue((String.class.getClassLoader())));
             instance.lng = ((Double) in.readValue((String.class.getClassLoader())));
             instance.name = ((String) in.readValue((String.class.getClassLoader())));
@@ -73,11 +73,11 @@ public class ParkingSpot extends RealmObject implements Parcelable
     }
             ;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

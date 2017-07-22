@@ -4,9 +4,11 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
@@ -44,8 +46,12 @@ import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
+import static java.lang.Math.toIntExact;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -264,6 +270,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     return null;
                 }
 
+                @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public View getInfoContents(Marker marker) {
 
@@ -285,21 +292,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     textViewUntil.setText("Reserved Until: " +String.valueOf(parking.getReservedUntil()));
                     button.setText("Reserve");
 
-
-//                    View popup=inflater.inflate(R.layout.popup, null);
-//
-//                    View popup = new View(R.id.in)
-//
-//                    TextView tv=(TextView)popup.findViewById(R.id.title);
-//
-//                    tv.setText(marker.getTitle());
-//                    tv=(TextView)popup.findViewById(R.id.snippet);
-//                    tv.setText(marker.getSnippet());
-//
-//                    return(popup);
+                    button.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Log.i("CLick 298","Click");
+                        }
+                    });
                     return v;
                 }
             });
+
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    Log.i("CLick 308","Click");
+                    Button button = (Button) findViewById(R.id.button3);
+                }
+            });
+
         }
         // Set a listener for marker click.
 //        mMap.setOnMarkerClickListener(this);
