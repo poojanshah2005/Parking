@@ -12,4 +12,5 @@ import io.reactivex.Observable;
 
 public interface Interactor2 {
         Observable<List<ParkingSpot>> getCakeList(double lat, double lng);
+        Observable<ParkingSpot> getSpot(int id);
 }

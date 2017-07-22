@@ -318,16 +318,18 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
                     parking = parkingListItem;
                 }
 
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("Marker ID: ");
-                stringBuilder.append(parking.getLat() + " " + parking.getLng());
-                stringBuilder.append(("getIsReserved: " + parking.getIsReserved()));
-                stringBuilder.append(("getReservedUntil: " + parking.getReservedUntil()));
+//                StringBuilder stringBuilder = new StringBuilder();
+//                stringBuilder.append("Marker ID: ");
+//                stringBuilder.append(parking.getLat() + " " + parking.getLng());
+//                stringBuilder.append(("getIsReserved: " + parking.getIsReserved()));
+//                stringBuilder.append(("getReservedUntil: " + parking.getReservedUntil()));
 
                 long tag = (long) marker.getTag();
-                Toast.makeText(this,
-                        stringBuilder.toString() ,
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this,
+//                        stringBuilder.toString() ,
+//                        Toast.LENGTH_SHORT).show();
+                getInfo((int) tag);
+
             }
         }
 
@@ -335,5 +337,23 @@ public class MapsActivity extends FragmentActivity implements GoogleMap.OnMarker
         // for the default behavior to occur (which is for the camera to move such that the
         // marker is centered and for the marker's info window to open, if it has one).
         return false;
+    }
+
+
+    private void getInfo(int id){
+        interactor_2.getSpot(id).observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
+    }
+
+    private void onSuccess(ParkingSpot parkingSpot) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Marker ID: ");
+        stringBuilder.append(parkingSpot.getLat() + " " + parkingSpot.getLng());
+        stringBuilder.append(("getIsReserved: " + parkingSpot.getIsReserved()));
+        stringBuilder.append(("getReservedUntil: " + parkingSpot.getReservedUntil()));
+        Toast.makeText(this,
+                stringBuilder.toString() ,
+                Toast.LENGTH_SHORT).show();
     }
 }

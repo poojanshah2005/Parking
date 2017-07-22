@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -17,6 +18,9 @@ public interface RequestInterface {
 
     @GET(Constants.DATA_TO_FETCH)
     Observable<List<ParkingSpot>> getResult(@Query("lng") Double lng, @Query("lat") Double lat);
+
+    @GET("{id}")
+    Observable<ParkingSpot> getSingleResult(@Path("id") int id);
 
 
 
