@@ -332,33 +332,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     TextView textViewMax = (TextView) v.findViewById(R.id.tvMax);
                     TextView textViewUntil = (TextView) v.findViewById(R.id.tvuntil);
                     Button button = (Button) v.findViewById(R.id.button3);
-
-
-//                    interactor_2.getSpot(parking.getId());
-
-                    final ParkingSpot[] parkingSpots1 = new ParkingSpot[1];
-                    Call<ParkingSpot> call = interactor_2.getSingleResultW(parking.getId());
-                    call.enqueue(new Callback<ParkingSpot>() {
-                        @Override
-                        public void onResponse(Call<ParkingSpot> call, Response<ParkingSpot> response) {
-                            parkingSpots1[0] = response.body();
-                        }
-
-                        @Override
-                        public void onFailure(Call<ParkingSpot> call, Throwable t) {
-                            // Log error here since request failed
-                            Log.e("onFailure", t.toString());
-                        }
-                    });
-                    if(parkingSpots1[0]== null){
-                        parkingSpots1[0] = parking;
+                    ParkingSpot parkingSpots = getParkingSpot(parking.getId());
+                    if(parkingSpots == null){
+                        parkingSpots = parking;
                     }
-                    textViewName.setText("Name: " +parkingSpots1[0].getName());
-                    textViewLatLng.setText("Location: " +parkingSpots1[0].getLat() + " " + parkingSpots1[0].getLng());
-                    textViewCost.setText("Cost Per Minute: " +parkingSpots1[0].getCostPerMinute());
-                    textViewMin.setText("MinReserve Time: " +String.valueOf(parkingSpots1[0].getMinReserveTimeMins()));
-                    textViewMax.setText("MaxReserve Time: " +String.valueOf(parkingSpots1[0].getMaxReserveTimeMins()));
-                    textViewUntil.setText("Reserved Until: " +String.valueOf(parkingSpots1[0].getReservedUntil()));
+                    textViewName.setText("Name: " +parkingSpots.getName());
+                    textViewLatLng.setText("Location: " +parkingSpots.getLat() + " " + parkingSpots.getLng());
+                    textViewCost.setText("Cost Per Minute: " +parkingSpots.getCostPerMinute());
+                    textViewMin.setText("MinReserve Time: " +String.valueOf(parkingSpots.getMinReserveTimeMins()));
+                    textViewMax.setText("MaxReserve Time: " +String.valueOf(parkingSpots.getMaxReserveTimeMins()));
+                    textViewUntil.setText("Reserved Until: " +String.valueOf(parkingSpots.getReservedUntil()));
                     if(parking.getIsReserved()){
                         button.setVisibility(View.INVISIBLE);
                     } else{
@@ -377,54 +360,76 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
-                    builder1.setMessage("Do you want to try and book ths Parking Spot?");
-                    builder1.setCancelable(true);
+                    int a = (int) marker.getTag();
+                    ParkingSpot parkingSpot = getParkingSpot(a);
 
-                    builder1.setPositiveButton(
-                            "Yes",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    Log.i("CLick 308","Click");
-                                    int a = (int) marker.getTag();
-                                    Log.i("CLick 369", String.valueOf(a));
-                                    interactor_2.getSinglePost(a).observeOn(AndroidSchedulers.mainThread())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccessPost, this:: OnErrorPost);
-                                    dialog.cancel();
-                                }
-
-                                private void OnErrorPost(Throwable throwable) {
-                                    Log.i("CPL Throwable", throwable.getMessage());
-                                    Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
-                                    Toast.makeText(getApplicationContext(),"You can't book this Parking Spot", LENGTH_LONG).show();
-                                }
-
-                                private void onSuccessPost(ParkingSpot parkingSpot) {
-                                    Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
-                                }
-                            });
-
-                    builder1.setNegativeButton(
-                            "No",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-
-                    AlertDialog alert11 = builder1.create();
-                    alert11.show();
+                    if (!parkingSpot.getIsReserved()) {
 
 
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
+                        builder1.setMessage("Do you want to try and book ths Parking Spot?");
+                        builder1.setCancelable(true);
+
+                        builder1.setPositiveButton(
+                                "Yes",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        Log.i("CLick 308", "Click");
+                                        int a = (int) marker.getTag();
+                                        Log.i("CLick 369", String.valueOf(a));
+                                        interactor_2.getSinglePost(a).observeOn(AndroidSchedulers.mainThread())
+                                                .observeOn(AndroidSchedulers.mainThread())
+                                                .subscribeOn(Schedulers.newThread()).subscribe(this::onSuccessPost, this::OnErrorPost);
+                                        dialog.cancel();
+                                    }
+
+                                    private void OnErrorPost(Throwable throwable) {
+                                        Log.i("CPL Throwable", throwable.getMessage());
+                                        Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
+                                        Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
+                                    }
+
+                                    private void onSuccessPost(ParkingSpot parkingSpot) {
+                                        Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
+                                    }
+                                });
+
+                        builder1.setNegativeButton(
+                                "No",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        AlertDialog alert11 = builder1.create();
+                        alert11.show();
+
+
+                    }
 
                 }
-
-
             });
         }
     }
 
+    private ParkingSpot getParkingSpot(int a) {
+        final ParkingSpot[] parkingSpots1 = new ParkingSpot[1];
+        Call<ParkingSpot> call = interactor_2.getSingleResultW(a);
+        call.enqueue(new Callback<ParkingSpot>() {
+            @Override
+            public void onResponse(Call<ParkingSpot> call, Response<ParkingSpot> response) {
+                parkingSpots1[0] = response.body();
+            }
+
+            @Override
+            public void onFailure(Call<ParkingSpot> call, Throwable t) {
+                // Log error here since request failed
+                Log.e("onFailure", t.toString());
+            }
+        });
+        return parkingSpots.get(0);
+    }
 
 
     private void askForPermission(String permission, Integer requestCode) {
@@ -446,43 +451,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
-
-//    @Override
-//    public boolean onMarkerClick(Marker marker) {
-//
-//        // Retrieve the data from the marker.
-//        Long clickCount = (Long) marker.getTag();
-//
-//        // Check if a click count was set, then display the click count.
-//        if (clickCount != null) {
-//            ParkingSpot parking = parkingSpots.get(0);
-//
-//            for(ParkingSpot parkingListItem : parkingSpots) {
-//                if (marker.getTag().equals(parkingListItem.getId())) {
-//                    parking = parkingListItem;
-//                }
-//
-////                StringBuilder stringBuilder = new StringBuilder();
-////                stringBuilder.append("Marker ID: ");
-////                stringBuilder.append(parking.getLat() + " " + parking.getLng());
-////                stringBuilder.append(("getIsReserved: " + parking.getIsReserved()));
-////                stringBuilder.append(("getReservedUntil: " + parking.getReservedUntil()));
-//
-//                long tag = (long) marker.getTag();
-////                Toast.makeText(this,
-////                        stringBuilder.toString() ,
-////                        Toast.LENGTH_SHORT).show();
-//                getInfo((int) tag);
-//
-//            }
-//        }
-//
-//        // Return false to indicate that we have not consumed the event and that we wish
-//        // for the default behavior to occur (which is for the camera to move such that the
-//        // marker is centered and for the marker's info window to open, if it has one).
-//        return false;
-//    }
 
 
     private void getInfo(int id){
