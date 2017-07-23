@@ -23,6 +23,9 @@ public interface RequestInterface {
     @GET(Constants.DATA_TO_FETCH)
     Observable<List<ParkingSpot>> getResult(@Query("lng") Double lng, @Query("lat") Double lat);
 
+    @GET(Constants.BASE_URL)
+    Observable<List<ParkingSpot>> getResult();
+
     @GET("{id}")
     Observable<ParkingSpot> getSingleResult(@Path("id") int id);
 

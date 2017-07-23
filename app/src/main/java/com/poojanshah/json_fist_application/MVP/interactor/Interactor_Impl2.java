@@ -53,6 +53,11 @@ public class Interactor_Impl2 implements Interactor2 {
     }
 
     @Override
+    public Observable<List<ParkingSpot>> getCakeList() {
+        return requestInterface.getResult();
+    }
+
+    @Override
     public Observable<ParkingSpot> getSpot(int id) {
         return requestInterface.getSingleResult(id);
     }
