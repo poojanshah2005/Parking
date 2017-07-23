@@ -56,16 +56,16 @@ public class RealmHelper {
             }
             return parkingList;
     }
-    public List<ParkingSpot> getParkingListMine(){
-        ArrayList<ParkingSpot> parkingList = new ArrayList<>();
-        RealmResults<ParkingSpot> result = realm.where(ParkingSpot.class).findAll();
-        for(ParkingSpot spot: result){
-            if(spot.getMine() != null && spot.getMine()){
-                parkingList.add(spot);
-            }
-        }
-        return parkingList;
-    }
+//    public List<ParkingSpot> getParkingListMine(){
+//        ArrayList<ParkingSpot> parkingList = new ArrayList<>();
+//        RealmResults<ParkingSpot> result = realm.where(ParkingSpot.class).findAll();
+//        for(ParkingSpot spot: result){
+//            if(spot.getMine() != null && spot.getMine()){
+//                parkingList.add(spot);
+//            }
+//        }
+//        return parkingList;
+//    }
 
 
 //    public void saveCake(Cake cake){

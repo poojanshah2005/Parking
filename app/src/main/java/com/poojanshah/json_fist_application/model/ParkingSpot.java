@@ -20,7 +20,6 @@ public class ParkingSpot extends RealmObject implements Parcelable
 
     @SerializedName("id")
     @Expose
-    @PrimaryKey
     private Integer id;
     @SerializedName("lat")
     @Expose
@@ -44,15 +43,6 @@ public class ParkingSpot extends RealmObject implements Parcelable
     @Expose
     private Boolean isReserved;
 
-    public Boolean getMine() {
-        return isMine;
-    }
-
-    public void setMine(Boolean mine) {
-        isMine = mine;
-    }
-
-    private Boolean isMine;
     @SerializedName("reserved_until")
     @Expose
     private Date reservedUntil;

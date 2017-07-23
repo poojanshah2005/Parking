@@ -3,6 +3,7 @@ package com.poojanshah.json_fist_application;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.location.Location;
@@ -41,6 +42,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.gson.Gson;
 import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
 import com.poojanshah.json_fist_application.Realm.RealmHelper;
 import com.poojanshah.json_fist_application.model.ParkingSpot;
@@ -88,6 +90,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
     private boolean run = false;
 
+    SharedPreferences sharedPref;
+
     public MapsActivity() {
     }
 
@@ -104,6 +108,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         interactor_2 = new Interactor_Impl2();
         markers = new ArrayList<>();
+
+        sharedPref = MapsActivity.this.getSharedPreferences(
+                getString(R.string.preference_file_key), this.MODE_PRIVATE);
     }
 
     // Trigger new location updates at interval
@@ -251,7 +258,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void performCakeListDisplay() {
-        displayParkingSpots(realmHelper.getParkingListMine());
         double lat = 51.508862 ,lng = -0.069227;
 //        double lat = 0 ,lng = -0;
         if(location != null){
@@ -259,7 +265,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             lng = location.getLongitude();
             Log.i("Location", lat + " " + lng);
         }
-        interactor_2.getCakeList(lat, lng).observeOn(AndroidSchedulers.mainThread())
+        interactor_2.getCakeList(lat,lng).observeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
     }
@@ -289,168 +295,206 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void displayParkingSpots(List<ParkingSpot> parkingSpots) {
-        for(ParkingSpot parking:parkingSpots){
-            BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-//            try {
-//                if(parking.getReservedUntil()!= null){Date date = (Date) parking.getReservedUntil();
-//                    if (date.after(new Date())) {
-////                        Log.i("displayParkingSpots304", date.toString());
-//                    }
+        int i = 0;
+        ParkingSpot myParking = getParking();
+        Marker markerMine = mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(myParking.getLat(),myParking.getLng()))
+                .title(myParking.getName())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+        markerMine.setTag(myParking.getId());
+        markers.add(markerMine);
+        for(ParkingSpot parking:parkingSpots) {
+//            if(!parking.getIsReserved()) {
+//                for (; i < 20; i++) {
+                    BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+
+//            if(parking.getMine() != null
+//                    &&parking.getMine()
+//                    ){
+//                try {
+//                    Date date = (Date) parking.getReservedUntil();
+//                        Log.i("date.after(new Date())", String.valueOf(date.after(new Date())));
+//                        if (date.before(new Date())) {
+////                            Log.i("displayParkingSpots314", date.toString());
+//                            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+//                        }
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
 //                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
+////                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
 //            }
-            if(parking.getMine() != null
-                    &&parking.getMine()
-                    ){
-                try {
-                    Date date = (Date) parking.getReservedUntil();
-                        Log.i("date.after(new Date())", String.valueOf(date.after(new Date())));
-                        if (date.before(new Date())) {
-//                            Log.i("displayParkingSpots314", date.toString());
+                        if(myParking.getId().equals(parking.getId())){
                             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
                         }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-//                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-            }else if(parking.getIsReserved()){
-                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-            }
-
-            LatLng latLng = new LatLng(parking.getLat(),parking.getLng());
-//            Log.i("Parking57",latLng.toString() + " "  + parking.getIsReserved());
-//            Log.i("Parking57", String.valueOf(parking.getIsReserved()));
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title(parking.getName())
-                    .icon(bitmapDescriptor));
-            marker.setTag(parking.getId());
-            markers.add(marker);
-
-            if(!parking.getIsReserved()) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            }
-
-            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-
-                @BindView(R.id.tvName) TextView textViewName;
-                @BindView(R.id.tvlatlng) TextView textViewLatLng;
-                @BindView(R.id.tvcostperminute) TextView textViewCost;
-                @BindView(R.id.tvmin)  TextView textViewMin;
-                @BindView(R.id.tvMax) TextView textViewMax;
-                @BindView(R.id.tvuntil) TextView textViewUntil;
-                @BindView(R.id.button3) Button button;
-
-
-
-                @Override
-                public View getInfoWindow(Marker marker) {
-                    return null;
-                }
-
-                @RequiresApi(api = Build.VERSION_CODES.N)
-                @Override
-                public View getInfoContents(Marker marker) {
-
-
-                    View v = getLayoutInflater().inflate(R.layout.infowindow, null);
-                    ButterKnife.bind(this, v);
-
-                    TextView textViewName = (TextView) v.findViewById(R.id.tvName);
-                    TextView textViewLatLng = (TextView) v.findViewById(R.id.tvlatlng);
-                    TextView textViewCost = (TextView) v.findViewById(R.id.tvcostperminute);
-                    TextView textViewMin = (TextView) v.findViewById(R.id.tvmin);
-                    TextView textViewMax = (TextView) v.findViewById(R.id.tvMax);
-                    TextView textViewUntil = (TextView) v.findViewById(R.id.tvuntil);
-                    Button button = (Button) v.findViewById(R.id.button3);
-
-
-
-                    ParkingSpot parkingSpots = getParkingSpot(parking.getId());
-                    if(parkingSpots == null){
-                        parkingSpots = parking;
+                    else if (parking.getIsReserved()) {
+                        bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
                     }
-                    textViewName.setText("Name: " +parkingSpots.getName());
-                    textViewLatLng.setText("Location: " +parkingSpots.getLat() + " " + parkingSpots.getLng());
-                    textViewCost.setText("Cost Per Minute: " +parkingSpots.getCostPerMinute());
-                    textViewMin.setText("MinReserve Time: " +String.valueOf(parkingSpots.getMinReserveTimeMins()));
-                    textViewMax.setText("MaxReserve Time: " +String.valueOf(parkingSpots.getMaxReserveTimeMins()));
-                    textViewUntil.setText("Reserved Until: " +String.valueOf(parkingSpots.getReservedUntil()));
-                    if(parking.getIsReserved()){
-                        button.setVisibility(View.INVISIBLE);
-                    } else{
-                        button.setVisibility(View.VISIBLE);
-                        button.setText("Reserve");
+
+                    LatLng latLng = new LatLng(parking.getLat(), parking.getLng());
+                    Marker marker = mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title(parking.getName())
+                            .icon(bitmapDescriptor));
+                    marker.setTag(parking.getId());
+                    markers.add(marker);
+
+                    if (!parking.getIsReserved()) {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                     }
-                    button.setOnClickListener(new View.OnClickListener() {
+
+                    mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                        @BindView(R.id.tvName)
+                        TextView textViewName;
+                        @BindView(R.id.tvlatlng)
+                        TextView textViewLatLng;
+                        @BindView(R.id.tvcostperminute)
+                        TextView textViewCost;
+                        @BindView(R.id.tvmin)
+                        TextView textViewMin;
+                        @BindView(R.id.tvMax)
+                        TextView textViewMax;
+                        @BindView(R.id.tvuntil)
+                        TextView textViewUntil;
+                        @BindView(R.id.button3)
+                        Button button;
+
+
                         @Override
-                        public void onClick(View view) {
-                            Log.i("CLick 298","Click");
+                        public View getInfoWindow(Marker marker) {
+                            return null;
+                        }
+
+                        @RequiresApi(api = Build.VERSION_CODES.N)
+                        @Override
+                        public View getInfoContents(Marker marker) {
+
+
+                            View v = getLayoutInflater().inflate(R.layout.infowindow, null);
+                            ButterKnife.bind(this, v);
+
+                            TextView textViewName = (TextView) v.findViewById(R.id.tvName);
+                            TextView textViewLatLng = (TextView) v.findViewById(R.id.tvlatlng);
+                            TextView textViewCost = (TextView) v.findViewById(R.id.tvcostperminute);
+                            TextView textViewMin = (TextView) v.findViewById(R.id.tvmin);
+                            TextView textViewMax = (TextView) v.findViewById(R.id.tvMax);
+                            TextView textViewUntil = (TextView) v.findViewById(R.id.tvuntil);
+                            Button button = (Button) v.findViewById(R.id.button3);
+
+
+                            ParkingSpot parkingSpots = getParkingSpot(parking.getId());
+                            if (parkingSpots == null) {
+                                parkingSpots = parking;
+                            }
+                            textViewName.setText("Name: " + parkingSpots.getName());
+                            textViewLatLng.setText("Location: " + parkingSpots.getLat() + " " + parkingSpots.getLng());
+                            textViewCost.setText("Cost Per Minute: " + parkingSpots.getCostPerMinute());
+                            textViewMin.setText("MinReserve Time: " + String.valueOf(parkingSpots.getMinReserveTimeMins()));
+                            textViewMax.setText("MaxReserve Time: " + String.valueOf(parkingSpots.getMaxReserveTimeMins()));
+                            textViewUntil.setText("Reserved Until: " + String.valueOf(parkingSpots.getReservedUntil()));
+                            if (parking.getIsReserved()) {
+                                button.setVisibility(View.INVISIBLE);
+                            } else {
+                                button.setVisibility(View.VISIBLE);
+                                button.setText("Reserve");
+                            }
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Log.i("CLick 298", "Click");
+                                }
+                            });
+                            return v;
                         }
                     });
-                    return v;
+                    mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                        @Override
+                        public void onInfoWindowClick(Marker marker) {
+                            int a = (int) marker.getTag();
+                            ParkingSpot parkingSpot = getParkingSpot(a);
+
+                            Log.i("getIsReserved", String.valueOf(parking.getIsReserved()!= null && !parking.getIsReserved()));
+
+                            if (parking.getIsReserved()!= null && !parking.getIsReserved()) {
+
+
+                                AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
+                                builder1.setMessage("Do you want to try and book ths Parking Spot?");
+                                builder1.setCancelable(true);
+
+                                builder1.setPositiveButton(
+                                        "Yes",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                Log.i("CLick 308", "Click");
+                                                int a = (int) marker.getTag();
+                                                Log.i("CLick 369", String.valueOf(a));
+                                                interactor_2.postSinglePost(a).enqueue(new Callback<ParkingSpot>() {
+                                                    @Override
+                                                    public void onResponse(Call<ParkingSpot> call, Response<ParkingSpot> response) {
+//                                                        Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
+                                                        showMessage("You have been able to book this Parking Spot");
+                                                        BitmapDescriptor bitmapDescriptorNew = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+                                                        marker.setIcon(bitmapDescriptorNew);
+//                                        realmHelper.SaveData(parkingSpot);
+//                                                saveLocation(parking.getLat(), parking.getLng(), parking.getReservedUntil());
+                                                        Log.i("message",response.message());
+                                                        saveParking(response.body());
+                                                        LatLng latLng1  = getLocation();
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(Call<ParkingSpot> call, Throwable t) {
+                                                        Log.i("CPL Throwable", t.getMessage());
+                                                        Log.i("CPL Throwable", String.valueOf(t.getCause()));
+                                                        Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
+                                                        showMessage("You can't book this Parking Spot");
+                                                    }
+                                                });
+//                                                interactor_2.postSinglePost(a).observeOn(AndroidSchedulers.mainThread())
+//                                                        .observeOn(AndroidSchedulers.mainThread())
+//                                                        .subscribeOn(Schedulers.newThread()).subscribe(this::onSuccessPost, this::OnErrorPost);
+                                                dialog.cancel();
+                                            }
+
+//                                            private void OnErrorPost(Throwable throwable) {
+//                                                Log.i("CPL Throwable", throwable.getMessage());
+//                                                Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
+//                                                Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
+//                                                showMessage("You can't book this Parking Spot");
+//                                            }
+//
+//                                            private void onSuccessPost(ParkingSpot parkingSpot) {
+//                                                Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
+//                                                showMessage("You have been able to book this Parking Spot");
+//                                                BitmapDescriptor bitmapDescriptorNew = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+//                                                marker.setIcon(bitmapDescriptorNew);
+////                                        realmHelper.SaveData(parkingSpot);
+////                                                saveLocation(parking.getLat(), parking.getLng(), parking.getReservedUntil());
+//                                                saveLocation(parkingSpot);
+//                                                LatLng latLng1  = getLocation();
+//
+//                                            }
+                                        });
+
+                                builder1.setNegativeButton(
+                                        "No",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                            }
+                                        });
+
+                                AlertDialog alert11 = builder1.create();
+                                alert11.show();
+                            }
+                        }
+                    });
                 }
-            });
-            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
-                    int a = (int) marker.getTag();
-                    ParkingSpot parkingSpot = getParkingSpot(a);
-
-//                    if (!parkingSpot.getIsReserved()) {
-
-
-                        AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
-                        builder1.setMessage("Do you want to try and book ths Parking Spot?");
-                        builder1.setCancelable(true);
-
-                        builder1.setPositiveButton(
-                                "Yes",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        Log.i("CLick 308", "Click");
-                                        int a = (int) marker.getTag();
-                                        Log.i("CLick 369", String.valueOf(a));
-                                        interactor_2.getSinglePost(a).observeOn(AndroidSchedulers.mainThread())
-                                                .observeOn(AndroidSchedulers.mainThread())
-                                                .subscribeOn(Schedulers.newThread()).subscribe(this::onSuccessPost, this::OnErrorPost);
-                                        dialog.cancel();
-                                    }
-
-                                    private void OnErrorPost(Throwable throwable) {
-                                        Log.i("CPL Throwable", throwable.getMessage());
-                                        Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
-                                        Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
-                                        showMessage("You can't book this Parking Spot");
-                                    }
-
-                                    private void onSuccessPost(ParkingSpot parkingSpot) {
-                                        Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
-                                        showMessage("You have been able to book this Parking Spot");
-                                        BitmapDescriptor bitmapDescriptorNew = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-                                        marker.setIcon(bitmapDescriptorNew);
-                                        parkingSpot.setMine(true);
-                                        realmHelper.SaveData(parkingSpot);
-
-                                    }
-                                });
-
-                        builder1.setNegativeButton(
-                                "No",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-
-                        AlertDialog alert11 = builder1.create();
-                        alert11.show();
-//                    }
-                }
-            });
-        }
+//            }
+//        }
     }
 
     private  void showMessage(String messagee){
@@ -511,5 +555,58 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         interactor_2.getSpot(id).observeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
+    }
+
+//    public void saveLocation(double lat, double lng, Object date ){
+//        SharedPreferences sharedPref = MapsActivity.this.getPreferences(MapsActivity.this.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPref.edit();
+//
+//        editor.putFloat(getString(R.string.lat), (float) lat);
+//        editor.putFloat(getString(R.string.lng), (float) lng);
+//        editor.putString(getString(R.string.date), (String) date);
+//        editor.commit();
+//    }
+
+    public void saveLocation(ParkingSpot parking){
+        SharedPreferences sharedPref = MapsActivity.this.getPreferences(MapsActivity.this.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        editor.putFloat(getString(R.string.lat),  Float.parseFloat(parking.getLat().toString()));
+        editor.putFloat(getString(R.string.lng),  Float.parseFloat(parking.getLng().toString()));
+        Date date = (Date) parking.getReservedUntil();
+        editor.putString(getString(R.string.date), date.toString());
+        editor.commit();
+    }
+
+    public void saveParking(ParkingSpot parking){
+        SharedPreferences sharedPref = MapsActivity.this.getPreferences(MapsActivity.this.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(parking);
+        editor.putString("MyObject", json);
+        editor.commit();
+    }
+
+    public ParkingSpot getParking() {
+        SharedPreferences sharedPref = MapsActivity.this.getPreferences(MapsActivity.this.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPref.getString("MyObject", "");
+        ParkingSpot parkingSpot = gson.fromJson(json, ParkingSpot.class);
+        return parkingSpot;
+    }
+
+    public LatLng getLocation(){
+        SharedPreferences sharedPref = MapsActivity.this.getPreferences(MapsActivity.this.MODE_PRIVATE);
+//        long highScore = sharedPref.getInt(getString(R.string.saved_high_score), defaultValue);
+        Float lat = sharedPref.getFloat(getString(R.string.lat), 0F);
+        Float lng = sharedPref.getFloat(getString(R.string.lng), 0F);
+        String date = sharedPref.getString(getString(R.string.date), String.valueOf(new Date()));
+        Log.i("getLocation",lat.toString());
+        Log.i("getLocation",lng.toString());
+
+        LatLng location = new LatLng(lat,lng);
+
+        return location;
     }
 }

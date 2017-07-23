@@ -30,7 +30,7 @@ public interface RequestInterface {
     Observable<ParkingSpot> getSingleResult(@Path("id") int id);
 
     @POST("{id}/reserve")
-    Observable<ParkingSpot> getSinglePost(@Path("id") int id);
+    Call<ParkingSpot> postSinglePost(@Path("id") int id);
 
     @GET("{id}")
     Call<ParkingSpot> getSingleResultW(@Path("id") int id);

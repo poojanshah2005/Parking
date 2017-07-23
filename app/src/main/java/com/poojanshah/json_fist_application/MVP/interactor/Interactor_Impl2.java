@@ -68,7 +68,7 @@ public class Interactor_Impl2 implements Interactor2 {
     }
 
     @Override
-    public Observable<ParkingSpot> getSinglePost(int id) {
-        return requestInterface.getSinglePost(id);
+    public Call<ParkingSpot> postSinglePost(int id) {
+        return requestInterface.postSinglePost(id);
     }
 }

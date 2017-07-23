@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Parking_Application</string>
     <string name="title_activity_maps">Map</string>
+    <string name="preference_file_key">Parking</string>
+    <string name="lat">lat</string>
+    <string name="lng">lng</string>
+    <string name="date">date</string>
 </resources>
