@@ -13,8 +13,8 @@ import retrofit2.Callback;
  */
 
 public interface Interactor2 {
-        Observable<List<ParkingSpot>> getCakeList(double lat, double lng);
-        Observable<List<ParkingSpot>> getCakeList();
+        Observable<List<ParkingSpot>> getParkingList(double lat, double lng);
+        Observable<List<ParkingSpot>> getParkingList();
         Observable<ParkingSpot> getSpot(int id);
         Call<ParkingSpot> getSingleResultW(int id);
         Call<ParkingSpot> postSinglePost(int id);

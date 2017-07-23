@@ -21,7 +21,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.HttpException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -29,7 +28,6 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -47,20 +45,13 @@ import com.poojanshah.json_fist_application.MVP.interactor.Interactor_Impl2;
 import com.poojanshah.json_fist_application.Realm.RealmHelper;
 import com.poojanshah.json_fist_application.model.ParkingSpot;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
-import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.observers.DisposableLambdaObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import retrofit2.Call;
@@ -69,7 +60,6 @@ import retrofit2.Response;
 
 import static android.widget.Toast.LENGTH_LONG;
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
-import static java.lang.Math.toIntExact;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -78,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     static final Integer LOCATION = 0x1;
     private static final int REQUEST_FINE_LOCATION = 0x1;
+    private static final String TAG_NULL = "TAG_NULL";
     Interactor_Impl2 interactor_2;
     List<Marker> markers;
     List<ParkingSpot> parkingSpots;
@@ -265,7 +256,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             lng = location.getLongitude();
             Log.i("Location", lat + " " + lng);
         }
-        interactor_2.getCakeList(lat,lng).observeOn(AndroidSchedulers.mainThread())
+        interactor_2.getParkingList(lat,lng).observeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
     }
@@ -299,12 +290,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ParkingSpot myParking;
         try {
             myParking = getParking();
-            Marker markerMine = mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(myParking.getLat(), myParking.getLng()))
-                    .title(myParking.getName())
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-            markerMine.setTag(myParking.getId());
-            markers.add(markerMine);
+            Date date = (Date) myParking.getReservedUntil();
+            if (date.after(new Date())) {
+                Marker markerMine = mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(myParking.getLat(), myParking.getLng()))
+                        .title(myParking.getName())
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+                markerMine.setTag(myParking.getId());
+                markers.add(markerMine);
+            }
         } catch (NullPointerException exc){
 
         }
@@ -438,12 +432,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             interactor_2.postSinglePost(a1).enqueue(new Callback<ParkingSpot>() {
                                                 @Override
                                                 public void onResponse(Call<ParkingSpot> call, Response<ParkingSpot> response) {
-                                                    Log.i("onSuccessPost", String.valueOf(response.body().getReservedUntil()));
-                                                    showMessage("You have been able to book this Parking Spot");
-                                                    BitmapDescriptor bitmapDescriptorNew = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-                                                    marker.setIcon(bitmapDescriptorNew);
-                                                    Log.i("message",response.message());
-                                                    saveParking(response.body());
+                                                    try {
+                                                        Log.i("onSuccessPost", String.valueOf(response.body().getReservedUntil()));
+                                                        showMessage("You have been able to book this Parking Spot");
+                                                        BitmapDescriptor bitmapDescriptorNew = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+                                                        marker.setIcon(bitmapDescriptorNew);
+                                                        Log.i("message", response.message());
+                                                        saveParking(response.body());
+                                                    } catch (NullPointerException exc){
+                                                        Log.i(TAG_NULL,exc.getMessage());
+                                                    }
                                                 }
 
                                                 @Override

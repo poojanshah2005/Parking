@@ -48,12 +48,12 @@ public class Interactor_Impl2 implements Interactor2 {
     }
 
     @Override
-    public Observable<List<ParkingSpot>> getCakeList(double lat, double lng) {
+    public Observable<List<ParkingSpot>> getParkingList(double lat, double lng) {
         return requestInterface.getResult(lat, lng);
     }
 
     @Override
-    public Observable<List<ParkingSpot>> getCakeList() {
+    public Observable<List<ParkingSpot>> getParkingList() {
         return requestInterface.getResult();
     }
 
