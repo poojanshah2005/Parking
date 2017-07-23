@@ -30,14 +30,14 @@ public class RealmHelper {
             }
         });
     }
-    public void SaveData(List<ParkingSpot> parkingSpot){
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                realm.copyToRealm(parkingSpot);
-            }
-        });
-    }
+//    public void SaveData(List<ParkingSpot> parkingSpot){
+//        realm.executeTransaction(new Realm.Transaction() {
+//            @Override
+//            public void execute(Realm realm) {
+//                realm.copyToRealm(parkingSpot);
+//            }
+//        });
+//    }
 
     public List<ParkingSpot> getParkingList(){
         ArrayList<ParkingSpot> parkingList = new ArrayList<>();
@@ -49,11 +49,22 @@ public class RealmHelper {
     }
         public List<ParkingSpot> getMine() {
             ArrayList<ParkingSpot> parkingList = new ArrayList<>();
-            RealmResults<ParkingSpot> result = realm.where(ParkingSpot.class).equalTo("isMine",true).findAllAsync();
+            RealmResults<ParkingSpot> result = realm.where(ParkingSpot.class).equalTo("isMine",true).findAll();
+            RealmResults<ParkingSpot> result2 = realm.where(ParkingSpot.class).findAll();
             for(ParkingSpot spot: result){
                 parkingList.add(spot);
             }
             return parkingList;
+    }
+    public List<ParkingSpot> getParkingListMine(){
+        ArrayList<ParkingSpot> parkingList = new ArrayList<>();
+        RealmResults<ParkingSpot> result = realm.where(ParkingSpot.class).findAll();
+        for(ParkingSpot spot: result){
+            if(spot.getMine() != null && spot.getMine()){
+                parkingList.add(spot);
+            }
+        }
+        return parkingList;
     }
 
 

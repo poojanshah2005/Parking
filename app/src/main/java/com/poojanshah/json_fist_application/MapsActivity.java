@@ -73,12 +73,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //    Interactor_Impl interactor_;
 
     static final Integer LOCATION = 0x1;
-    static final Integer CALL = 0x2;
-    static final Integer WRITE_EXST = 0x3;
-    static final Integer READ_EXST = 0x4;
-    static final Integer CAMERA = 0x5;
-    static final Integer ACCOUNTS = 0x6;
-    static final Integer GPS_SETTINGS = 0x7;
     private static final int REQUEST_FINE_LOCATION = 0x1;
     Interactor_Impl2 interactor_2;
     List<Marker> markers;
@@ -186,7 +180,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         // GPS location can be null if GPS is switched off
                         if (location != null) {
                             onLocationChanged(location);
-
                         }
                     }
                 })
@@ -256,20 +249,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void performCakeListDisplay() {
+        displayParkingSpots(realmHelper.getParkingListMine());
         double lat = 51.508862 ,lng = -0.069227;
+//        double lat = 0 ,lng = -0;
         if(location != null){
             lat = location.getLatitude();
             lng = location.getLongitude();
             Log.i("Location", lat + " " + lng);
         }
-        displayParkingSpots(realmHelper.getMine());
         interactor_2.getCakeList(lat, lng).observeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
-
     }
 
     private void onSuccess(List<ParkingSpot> parkingSpots) {
+        for(ParkingSpot p : parkingSpots){
+            realmHelper.SaveData(p);
+        }
         displayParkingSpots(parkingSpots);
     }
 
@@ -291,43 +287,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void displayParkingSpots(List<ParkingSpot> parkingSpots) {
-        this.parkingSpots = parkingSpots;
-        realmHelper.SaveData(parkingSpots);
         for(ParkingSpot parking:parkingSpots){
-            realmHelper.SaveData(parking);
             BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-
-
-            try {
-                if(parking.getReservedUntil()!= null){Date date = (Date) parking.getReservedUntil();
-                    if (date.before(new Date())) {
-//                        Log.i("displayParkingSpots304", date.toString());
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if(parking.getMine() != null &&parking.getMine()){
+//            try {
+//                if(parking.getReservedUntil()!= null){Date date = (Date) parking.getReservedUntil();
+//                    if (date.after(new Date())) {
+////                        Log.i("displayParkingSpots304", date.toString());
+//                    }
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            if(parking.getMine() != null
+                    &&parking.getMine()
+                    ){
                 try {
-                    if(parking.getReservedUntil()!= null){Date date = (Date) parking.getReservedUntil();
+                    Date date = (Date) parking.getReservedUntil();
+                        Log.i("date.after(new Date())", String.valueOf(date.after(new Date())));
                         if (date.before(new Date())) {
 //                            Log.i("displayParkingSpots314", date.toString());
                             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
                         }
-                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 //                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
             }else if(parking.getIsReserved()){
                 bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-            }else{
-                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
             }
 
             LatLng latLng = new LatLng(parking.getLat(),parking.getLng());
 //            Log.i("Parking57",latLng.toString() + " "  + parking.getIsReserved());
-            Log.i("Parking57", String.valueOf(parking.getIsReserved()));
+//            Log.i("Parking57", String.valueOf(parking.getIsReserved()));
             Marker marker = mMap.addMarker(new MarkerOptions()
                     .position(latLng)
                     .title(parking.getName())
@@ -419,8 +411,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     private void onSuccessPost(ParkingSpot parkingSpot) {
                                         Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
                                         showMessage("You have been able to book this Parking Spot");
+                                        BitmapDescriptor bitmapDescriptorNew = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+                                        marker.setIcon(bitmapDescriptorNew);
                                         parkingSpot.setMine(true);
                                         realmHelper.SaveData(parkingSpot);
+
                                     }
                                 });
 
@@ -434,10 +429,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         AlertDialog alert11 = builder1.create();
                         alert11.show();
-
-
 //                    }
-
                 }
             });
         }
@@ -501,6 +493,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
     }
-
-
 }
