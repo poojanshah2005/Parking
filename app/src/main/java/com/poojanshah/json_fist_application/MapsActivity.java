@@ -277,7 +277,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         displayParkingSpots(parkingSpots);
     }
 
-    private void onSuccess(ParkingSpot parkingSpot) {
+    private void onSuccessGet(ParkingSpot parkingSpot) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Marker ID: ");
         stringBuilder.append(parkingSpot.getLat() + " " + parkingSpot.getLng());
@@ -296,13 +296,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void displayParkingSpots(List<ParkingSpot> parkingSpots) {
         int i = 0;
-        ParkingSpot myParking = getParking();
-        Marker markerMine = mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(myParking.getLat(),myParking.getLng()))
-                .title(myParking.getName())
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
-        markerMine.setTag(myParking.getId());
-        markers.add(markerMine);
+        ParkingSpot myParking;
+        try {
+            myParking = getParking();
+            Marker markerMine = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(myParking.getLat(), myParking.getLng()))
+                    .title(myParking.getName())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET)));
+            markerMine.setTag(myParking.getId());
+            markers.add(markerMine);
+        } catch (NullPointerException exc){
+
+        }
         for(ParkingSpot parking:parkingSpots) {
 //            if(!parking.getIsReserved()) {
 //                for (; i < 20; i++) {
@@ -324,7 +329,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                }
 ////                bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
 //            }
-                        if(myParking.getId().equals(parking.getId())){
+                        if(getParking() != null && getParking().getId().equals(parking.getId())){
                             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
                         }
 
@@ -417,7 +422,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             Log.i("getIsReserved", String.valueOf(parking.getIsReserved()!= null && !parking.getIsReserved()));
 
-                            if (parking.getIsReserved()!= null && !parking.getIsReserved()) {
+//                            if (parking.getIsReserved()!= null && !parking.getIsReserved()) {
 
 
                                 AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
@@ -426,57 +431,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 builder1.setPositiveButton(
                                         "Yes",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int id) {
-                                                Log.i("CLick 308", "Click");
-                                                int a = (int) marker.getTag();
-                                                Log.i("CLick 369", String.valueOf(a));
-                                                interactor_2.postSinglePost(a).enqueue(new Callback<ParkingSpot>() {
-                                                    @Override
-                                                    public void onResponse(Call<ParkingSpot> call, Response<ParkingSpot> response) {
-//                                                        Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
-                                                        showMessage("You have been able to book this Parking Spot");
-                                                        BitmapDescriptor bitmapDescriptorNew = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-                                                        marker.setIcon(bitmapDescriptorNew);
-//                                        realmHelper.SaveData(parkingSpot);
-//                                                saveLocation(parking.getLat(), parking.getLng(), parking.getReservedUntil());
-                                                        Log.i("message",response.message());
-                                                        saveParking(response.body());
-                                                        LatLng latLng1  = getLocation();
-                                                    }
+                                        (dialog, id) -> {
+                                            Log.i("CLick 308", "Click");
+                                            int a1 = (int) marker.getTag();
+                                            Log.i("CLick 369", String.valueOf(a1));
+                                            interactor_2.postSinglePost(a1).enqueue(new Callback<ParkingSpot>() {
+                                                @Override
+                                                public void onResponse(Call<ParkingSpot> call, Response<ParkingSpot> response) {
+                                                    Log.i("onSuccessPost", String.valueOf(response.body().getReservedUntil()));
+                                                    showMessage("You have been able to book this Parking Spot");
+                                                    BitmapDescriptor bitmapDescriptorNew = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
+                                                    marker.setIcon(bitmapDescriptorNew);
+                                                    Log.i("message",response.message());
+                                                    saveParking(response.body());
+                                                }
 
-                                                    @Override
-                                                    public void onFailure(Call<ParkingSpot> call, Throwable t) {
-                                                        Log.i("CPL Throwable", t.getMessage());
-                                                        Log.i("CPL Throwable", String.valueOf(t.getCause()));
-                                                        Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
-                                                        showMessage("You can't book this Parking Spot");
-                                                    }
-                                                });
+                                                @Override
+                                                public void onFailure(Call<ParkingSpot> call, Throwable t) {
+                                                    Log.i("CPL Throwable", t.getMessage());
+                                                    Log.i("CPL Throwable", String.valueOf(t.getCause()));
+                                                    Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
+                                                    showMessage("You can't book this Parking Spot");
+                                                }
+                                            });
 //                                                interactor_2.postSinglePost(a).observeOn(AndroidSchedulers.mainThread())
 //                                                        .observeOn(AndroidSchedulers.mainThread())
 //                                                        .subscribeOn(Schedulers.newThread()).subscribe(this::onSuccessPost, this::OnErrorPost);
-                                                dialog.cancel();
-                                            }
-
-//                                            private void OnErrorPost(Throwable throwable) {
-//                                                Log.i("CPL Throwable", throwable.getMessage());
-//                                                Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
-//                                                Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
-//                                                showMessage("You can't book this Parking Spot");
-//                                            }
-//
-//                                            private void onSuccessPost(ParkingSpot parkingSpot) {
-//                                                Log.i("onSuccessPost", String.valueOf(parkingSpot.getReservedUntil()));
-//                                                showMessage("You have been able to book this Parking Spot");
-//                                                BitmapDescriptor bitmapDescriptorNew = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET);
-//                                                marker.setIcon(bitmapDescriptorNew);
-////                                        realmHelper.SaveData(parkingSpot);
-////                                                saveLocation(parking.getLat(), parking.getLng(), parking.getReservedUntil());
-//                                                saveLocation(parkingSpot);
-//                                                LatLng latLng1  = getLocation();
-//
-//                                            }
+                                            dialog.cancel();
                                         });
 
                                 builder1.setNegativeButton(
@@ -490,8 +471,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 AlertDialog alert11 = builder1.create();
                                 alert11.show();
                             }
-                        }
+//                        }
                     });
+
                 }
 //            }
 //        }
@@ -554,7 +536,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void getInfo(int id){
         interactor_2.getSpot(id).observeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccess, this:: OnError);
+                .subscribeOn(Schedulers.newThread()).subscribe(this:: onSuccessGet, this:: OnError);
     }
 
 //    public void saveLocation(double lat, double lng, Object date ){
