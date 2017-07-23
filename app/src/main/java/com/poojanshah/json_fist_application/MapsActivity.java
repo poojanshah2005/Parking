@@ -52,6 +52,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -332,6 +334,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                @BindView(R.id.tvName) TextView textViewName;
+                @BindView(R.id.tvlatlng) TextView textViewLatLng;
+                @BindView(R.id.tvcostperminute) TextView textViewCost;
+                @BindView(R.id.tvmin)  TextView textViewMin;
+                @BindView(R.id.tvMax) TextView textViewMax;
+                @BindView(R.id.tvuntil) TextView textViewUntil;
+                @BindView(R.id.button3) Button button;
+
+
+
                 @Override
                 public View getInfoWindow(Marker marker) {
                     return null;
@@ -341,7 +354,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 @Override
                 public View getInfoContents(Marker marker) {
 
+
                     View v = getLayoutInflater().inflate(R.layout.infowindow, null);
+                    ButterKnife.bind(this, v);
 
                     TextView textViewName = (TextView) v.findViewById(R.id.tvName);
                     TextView textViewLatLng = (TextView) v.findViewById(R.id.tvlatlng);
@@ -350,6 +365,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     TextView textViewMax = (TextView) v.findViewById(R.id.tvMax);
                     TextView textViewUntil = (TextView) v.findViewById(R.id.tvuntil);
                     Button button = (Button) v.findViewById(R.id.button3);
+
+
+
                     ParkingSpot parkingSpots = getParkingSpot(parking.getId());
                     if(parkingSpots == null){
                         parkingSpots = parking;
@@ -463,7 +481,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.e("onFailure", t.toString());
             }
         });
-        return parkingSpots.get(0);
+        Log.e("onFailure", "");
+        return parkingSpots1[0];
     }
 
 
