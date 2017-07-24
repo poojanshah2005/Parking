@@ -26,7 +26,7 @@ public class RealmHelper {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.copyToRealm(parkingSpot);
+                realm.copyToRealmOrUpdate(parkingSpot);
             }
         });
     }

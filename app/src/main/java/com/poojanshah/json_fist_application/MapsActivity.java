@@ -282,7 +282,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void OnError(Throwable throwable) {
         Log.i("CPL Throwable", throwable.getMessage());
         Log.i("CPL Throwable", String.valueOf(throwable.getCause()));
-        displayParkingSpots(realmHelper.getParkingList());
+        List<ParkingSpot> parkingSpots = realmHelper.getParkingList();
+        List<ParkingSpot> passing = new ArrayList<>();
+        for(int i = 0; i < parkingSpots.size() || i < 20; i++){
+            passing.add(parkingSpots.get(i));
+        }
+        displayParkingSpots(passing);
     }
 
     private void displayParkingSpots(List<ParkingSpot> parkingSpots) {

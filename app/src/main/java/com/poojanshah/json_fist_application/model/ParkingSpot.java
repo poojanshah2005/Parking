@@ -20,6 +20,7 @@ public class ParkingSpot extends RealmObject implements Parcelable
 
     @SerializedName("id")
     @Expose
+    @PrimaryKey
     private Integer id;
     @SerializedName("lat")
     @Expose
