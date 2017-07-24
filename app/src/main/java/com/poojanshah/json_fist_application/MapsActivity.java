@@ -426,7 +426,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             Log.i("getIsReserved", String.valueOf(parking.getIsReserved()!= null && !parking.getIsReserved()));
 
-//                            if (parking.getIsReserved()!= null && !parking.getIsReserved()) {
+                            if (parking.getIsReserved()!= null && !parking.getIsReserved()) {
 
 
                                 AlertDialog.Builder builder1 = new AlertDialog.Builder(MapsActivity.this);
@@ -479,8 +479,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 AlertDialog alert11 = builder1.create();
                                 alert11.show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
+                                showMessage("You can't book this Parking Spot");
                             }
-//                        }
+                        }
                     });
 
                 }
