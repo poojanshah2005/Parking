@@ -265,7 +265,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         for(ParkingSpot p : parkingSpots){
             realmHelper.SaveData(p);
         }
-        displayParkingSpots(parkingSpots);
+
+        List<ParkingSpot> passing = new ArrayList<>();
+        for(int i = 0; i < parkingSpots.size() || i < 20; i++){
+            passing.add(parkingSpots.get(i));
+        }
+        displayParkingSpots(passing);
     }
 
     private void onSuccessGet(ParkingSpot parkingSpot) {
@@ -451,10 +456,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                                 @Override
                                                 public void onFailure(Call<ParkingSpot> call, Throwable t) {
-                                                    Log.i("CPL Throwable", t.getMessage());
-                                                    Log.i("CPL Throwable", String.valueOf(t.getCause()));
                                                     Toast.makeText(getApplicationContext(), "You can't book this Parking Spot", LENGTH_LONG).show();
                                                     showMessage("You can't book this Parking Spot");
+                                                    Log.i("CPL Throwable", t.getMessage());
+                                                    Log.i("CPL Throwable", String.valueOf(t.getCause()));
+
                                                 }
                                             });
 //                                                interactor_2.postSinglePost(a).observeOn(AndroidSchedulers.mainThread())
